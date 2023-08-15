@@ -5,6 +5,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -49,6 +51,10 @@ class StackListFragment : Fragment() {
                 }
             }
 
+        binding.editText.doOnTextChanged { text, start, before, count ->
+            viewModel.notifySearchTextChanged()
+        }
+
         binding.settings.setOnClickListener { _ ->
             findNavController().navigate(R.id.action_stackListFragment_to_settingsFragment)
         }
@@ -75,6 +81,10 @@ class StackListFragment : Fragment() {
                 showConfirmDeleteDialog(stack)
             }
             binding.stackList.adapter = stackAdapter
+        }
+        viewModel.confirmSearchText.observe(viewLifecycleOwner) {
+            // TODO: filter stack adapter based on search text
+            Toast.makeText(context, "Search text confirmed - ${binding.editText.text}", Toast.LENGTH_SHORT).show()
         }
     }
 
