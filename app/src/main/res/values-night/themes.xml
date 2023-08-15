@@ -7,5 +7,6 @@
         <item name="colorOnBackground">@color/light_gray</item>
         <item name="colorPrimary">@color/white</item>
         <item name="colorSecondary">@color/alt_blue</item>
+        <item name="colorTertiary">@color/alt_red</item>
     </style>
 </resources>

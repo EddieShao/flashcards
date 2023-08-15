@@ -1,6 +1,5 @@
 package com.example.flashcards.fragments
 
-import android.app.AlertDialog
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -16,6 +15,7 @@ import com.example.flashcards.data.entities.Stack
 import com.example.flashcards.databinding.FragmentStackListBinding
 import com.example.flashcards.viewmodels.StackListViewModel
 import com.example.flashcards.viewmodels.sortBySetting
+import com.example.flashcards.views.Dialog
 import com.example.flashcards.views.SpaceDivider
 import com.example.flashcards.views.StackAdapter
 import kotlinx.coroutines.launch
@@ -79,7 +79,7 @@ class StackListFragment : Fragment() {
     }
 
     private fun showConfirmDeleteDialog(stack: Stack) {
-        AlertDialog.Builder(context).run {
+        Dialog(context).run {
             setTitle("Delete Cards")
             setMessage("Are you sure you want to delete this set of cards?")
             setPositiveButton("Delete") { dialog, _ ->
@@ -90,7 +90,7 @@ class StackListFragment : Fragment() {
             setNegativeButton("Cancel") { dialog, _ ->
                 dialog.cancel()
             }
-            create()
-        }.show()
+            show()
+        }
     }
 }
