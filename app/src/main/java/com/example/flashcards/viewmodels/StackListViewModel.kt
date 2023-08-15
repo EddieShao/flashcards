@@ -4,6 +4,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.flashcards.data.entities.Stack
+import com.example.flashcards.helpers.Setting
+import com.example.flashcards.helpers.SettingsHelper
+import com.example.flashcards.helpers.StackSortOrderOption
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -32,5 +35,13 @@ class StackListViewModel : ViewModel() {
             // TODO: db call to delete
         }
         stacks.value?.remove(stack)
+    }
+}
+
+fun MutableList<Stack>.sortBySetting() {
+    when (SettingsHelper.currentOptionOf<StackSortOrderOption>(Setting.STACK_SORT_ORDER)) {
+        StackSortOrderOption.RECENTLY_ADDED -> sortBy { it.createdOn }
+        StackSortOrderOption.TITLE -> sortBy { it.title }
+        else -> {}
     }
 }

@@ -9,13 +9,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.flashcards.R
 import com.example.flashcards.databinding.DropdownSettingControlBinding
 import com.example.flashcards.databinding.SettingsOptionBinding
-import com.example.flashcards.viewmodels.DropDownSettingValue
-import com.example.flashcards.viewmodels.Setting
-import com.example.flashcards.viewmodels.SettingValue
+import com.example.flashcards.helpers.Setting
+import com.example.flashcards.helpers.SettingsHelper
 
 class SettingAdapter(
     private val settings: List<Setting>,
-    private val onSettingChanged: (name: String, value: SettingValue) -> Unit
+    private val onSettingChanged: (setting: Setting, newValue: Any) -> Unit
 ) :
     RecyclerView.Adapter<SettingAdapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(
@@ -33,42 +32,36 @@ class SettingAdapter(
 
     class ViewHolder(
         view: View,
-        private val onSettingChanged: (name: String, value: SettingValue) -> Unit
+        private val onSettingChanged: (setting: Setting, newValue: Any) -> Unit
     ) : RecyclerView.ViewHolder(view) {
         private val binding = SettingsOptionBinding.bind(view)
 
         fun bind(setting: Setting) {
-            binding.name.text = setting.name
+            binding.name.text = setting.key
             binding.description.text = setting.description
-            when (setting.value) {
-                is DropDownSettingValue -> {
-                    binding.control.addView(inflateDropDownSetting(setting.name, setting.value))
+            when (setting.type) {
+                String::class -> {
+                    binding.control.addView(inflateDropDownSetting(setting))
                 }
             }
         }
 
-        private fun inflateDropDownSetting(name: String, setting: DropDownSettingValue): View {
+        private fun inflateDropDownSetting(setting: Setting): View {
             val binding = DropdownSettingControlBinding.inflate(
                 LayoutInflater.from(binding.root.context), binding.root, false
             )
-            binding.choice.text = setting.choice
+            binding.choice.text = SettingsHelper.currentValueOf(setting) as String
             binding.menuButton.setOnClickListener { menuButton ->
                 val popupMenu = PopupMenu(
                     ContextThemeWrapper(menuButton.context, R.style.MenuStyle), // force ltr
                     menuButton
                 )
                 for (option in setting.options) {
-                    popupMenu.menu.add(option)
+                    popupMenu.menu.add(option as String)
                 }
                 popupMenu.setOnMenuItemClickListener { menuItem ->
                     binding.choice.text = menuItem.title
-                    onSettingChanged(
-                        name,
-                        DropDownSettingValue(
-                            choice = menuItem.title?.toString() ?: "",
-                            setting.options
-                        )
-                    )
+                    onSettingChanged(setting, menuItem.title ?: setting.default)
                     true
                 }
                 popupMenu.show()

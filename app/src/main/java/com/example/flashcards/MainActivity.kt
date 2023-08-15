@@ -3,7 +3,7 @@ package com.example.flashcards
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.example.flashcards.data.Database
-import com.example.flashcards.helpers.PreferenceHelper
+import com.example.flashcards.helpers.SettingsHelper
 import com.example.flashcards.helpers.SystemHelper
 
 class MainActivity : AppCompatActivity() {
@@ -11,7 +11,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         Database.init(applicationContext)
         SystemHelper.init(this)
-        PreferenceHelper.init(this)
+        SettingsHelper.init(this)
         setContentView(R.layout.activity_main)
     }
 
@@ -19,6 +19,6 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         Database.destroy()
         SystemHelper.destroy()
-        PreferenceHelper.destroy()
+        SettingsHelper.destroy()
     }
 }

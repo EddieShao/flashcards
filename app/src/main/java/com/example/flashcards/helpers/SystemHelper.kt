@@ -16,8 +16,8 @@ object SystemHelper {
         getService = null
     }
 
-    fun hideKeypad(token: IBinder) {
+    fun hideKeypad(windowToken: IBinder) {
         val imm = getService?.invoke(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-        imm?.hideSoftInputFromWindow(token, 0)
+        imm?.hideSoftInputFromWindow(windowToken, 0)
     }
 }

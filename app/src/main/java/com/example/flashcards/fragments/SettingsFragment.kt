@@ -47,8 +47,8 @@ class SettingsFragment : Fragment() {
 
     private fun initObservers() {
         viewModel.settings.observe(viewLifecycleOwner) { settings ->
-            binding.settingList.adapter = SettingAdapter(settings) { name, value ->
-                viewModel.updateSetting(name, value)
+            binding.settingList.adapter = SettingAdapter(settings) { setting, newValue ->
+                viewModel.updateSetting(setting, newValue)
             }
         }
     }

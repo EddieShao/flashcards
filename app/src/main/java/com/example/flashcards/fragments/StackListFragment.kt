@@ -82,12 +82,12 @@ class StackListFragment : Fragment() {
         AlertDialog.Builder(context).run {
             setTitle("Delete Cards")
             setMessage("Are you sure you want to delete this set of cards?")
-            setPositiveButton("Delete") { dialog, which ->
+            setPositiveButton("Delete") { dialog, _ ->
                 viewModel.deleteStack(stack)
                 stackAdapter.delete(stack)
                 dialog.dismiss()
             }
-            setNegativeButton("Cancel") { dialog, which ->
+            setNegativeButton("Cancel") { dialog, _ ->
                 dialog.cancel()
             }
             create()
