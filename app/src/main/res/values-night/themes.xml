@@ -1,0 +1,11 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Flashcards" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your dark theme here. -->
+        <item name="android:fontFamily">@font/gloria_hallelujah</item>
+        <item name="android:background">@color/alt_black</item>
+        <item name="colorOnBackground">@color/light_gray</item>
+        <item name="colorPrimary">@color/white</item>
+        <item name="colorSecondary">@color/alt_blue</item>
+    </style>
+</resources>

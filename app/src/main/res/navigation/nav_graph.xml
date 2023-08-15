@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/stackListFragment">
+
+    <fragment
+        android:id="@+id/editorFragment"
+        android:name="com.example.flashcards.fragments.EditorFragment"
+        android:label="fragment_editor"
+        tools:layout="@layout/fragment_editor" >
+    </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.flashcards.fragments.SettingsFragment"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" />
+    <fragment
+        android:id="@+id/practiceFragment"
+        android:name="com.example.flashcards.fragments.PracticeFragment"
+        android:label="fragment_practice"
+        tools:layout="@layout/fragment_practice" >
+        <action
+            android:id="@+id/action_practiceFragment_to_finishFragment"
+            app:destination="@id/finishFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/finishFragment"
+        android:name="com.example.flashcards.fragments.FinishFragment"
+        android:label="fragment_finish"
+        tools:layout="@layout/fragment_finish" >
+        <action
+            android:id="@+id/action_finishFragment_to_reviewFragment"
+            app:destination="@id/reviewFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/reviewFragment"
+        android:name="com.example.flashcards.fragments.ReviewFragment"
+        android:label="fragment_review"
+        tools:layout="@layout/fragment_review" />
+    <fragment
+        android:id="@+id/stackListFragment"
+        android:name="com.example.flashcards.fragments.StackListFragment"
+        android:label="fragment_stack_list"
+        tools:layout="@layout/fragment_stack_list" >
+        <action
+            android:id="@+id/action_stackListFragment_to_practiceFragment"
+            app:destination="@id/practiceFragment" />
+        <action
+            android:id="@+id/action_stackListFragment_to_editorFragment"
+            app:destination="@id/editorFragment" />
+        <action
+            android:id="@+id/action_stackListFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+    </fragment>
+</navigation>

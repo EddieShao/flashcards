@@ -1,0 +1,17 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Flashcards" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <item name="android:fontFamily">@font/gloria_hallelujah</item>
+        <item name="android:background">@color/white</item>
+        <item name="colorOnBackground">@color/gray</item>
+        <item name="colorPrimary">@color/black</item>
+        <item name="colorSecondary">@color/blue</item>
+    </style>
+
+    <style name="Theme.Flashcards" parent="Base.Theme.Flashcards" />
+
+    <style name="MenuStyle">
+        <item name="android:layoutDirection">ltr</item>
+    </style>
+</resources>
