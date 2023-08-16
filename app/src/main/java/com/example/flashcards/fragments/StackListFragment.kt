@@ -16,7 +16,6 @@ import com.example.flashcards.helpers.SystemHelper
 import com.example.flashcards.data.entities.Stack
 import com.example.flashcards.databinding.FragmentStackListBinding
 import com.example.flashcards.viewmodels.StackListViewModel
-import com.example.flashcards.viewmodels.sortBySetting
 import com.example.flashcards.views.Dialog
 import com.example.flashcards.views.SpaceDivider
 import com.example.flashcards.views.StackAdapter
@@ -40,6 +39,8 @@ class StackListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        viewModel.loadStacks()
 
         // hide keyboard when focus on search bar is lost
         binding.editText.onFocusChangeListener =
@@ -76,15 +77,13 @@ class StackListFragment : Fragment() {
 
     private fun initObservers() {
         viewModel.stacks.observe(viewLifecycleOwner) { stacks ->
-            stacks.sortBySetting()
             stackAdapter = StackAdapter(stacks) { stack ->
                 showConfirmDeleteDialog(stack)
             }
             binding.stackList.adapter = stackAdapter
         }
         viewModel.confirmSearchText.observe(viewLifecycleOwner) {
-            // TODO: filter stack adapter based on search text
-            Toast.makeText(context, "Search text confirmed - ${binding.editText.text}", Toast.LENGTH_SHORT).show()
+            stackAdapter.filter(binding.editText.text.toString())
         }
     }
 

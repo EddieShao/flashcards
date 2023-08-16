@@ -20,17 +20,30 @@ class StackListViewModel : ViewModel() {
     val confirmSearchText = MutableLiveData<Unit>()
     private var searchTextJob: Job? = null
 
-    init {
+    fun loadStacks() {
         viewModelScope.launch {
-            val data = withContext(Dispatchers.IO) {
-                // TODO: replace with db call
-                mutableListOf(
-                    Stack("This is a Title", 200, 0),
-                    Stack("Short", 100, 1),
-                    Stack("This is a very long title. The entire title may not fit inside the allocated space, so the user will see some trailing ellipses to indicate that the title continues.", 374, 2),
-                    Stack("Another Title to Test List Scrolling", 90, 3),
-                    Stack("Another", 800, 4)
-                )
+            val data = stacks.value.let { stacks ->
+                if (stacks.isNullOrEmpty()) {
+                    withContext(Dispatchers.IO) {
+                        // TODO: replace with db call
+                        mutableListOf(
+                            Stack("This is a Title", 200, 0),
+                            Stack("Short", 100, 1),
+                            Stack("This is a very long title. The entire title may not fit inside the allocated space, so the user will see some trailing ellipses to indicate that the title continues.", 374, 2),
+                            Stack("Another Title to Test List Scrolling", 90, 3),
+                            Stack("Another", 800, 4)
+                        )
+                    }
+                } else {
+                    stacks
+                }
+            }
+            withContext(Dispatchers.Default) {
+                when (SettingsHelper.currentOptionOf<StackSortOrderOption>(Setting.STACK_SORT_ORDER)) {
+                    StackSortOrderOption.RECENTLY_ADDED -> data.sortBy { it.createdOn }
+                    StackSortOrderOption.TITLE -> data.sortBy { it.title }
+                    else -> {}
+                }
             }
             stacks.postValue(data)
         }
@@ -54,19 +67,10 @@ class StackListViewModel : ViewModel() {
             if (!job.isCancelled) job.cancel()
         }
         searchTextJob = viewModelScope.launch(Dispatchers.Default) {
-            delay(1000) // TODO: change this to desired wait time
+            delay(timeMillis = 500) // TODO: change this to desired wait time
             if (isActive) {
                 confirmSearchText.postValue(Unit)
             }
         }
-    }
-}
-
-// TODO: move this into coroutine on Dispatchers.Default
-fun MutableList<Stack>.sortBySetting() {
-    when (SettingsHelper.currentOptionOf<StackSortOrderOption>(Setting.STACK_SORT_ORDER)) {
-        StackSortOrderOption.RECENTLY_ADDED -> sortBy { it.createdOn }
-        StackSortOrderOption.TITLE -> sortBy { it.title }
-        else -> {}
     }
 }

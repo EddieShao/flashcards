@@ -1,5 +1,6 @@
 package com.example.flashcards.views
 
+import android.annotation.SuppressLint
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
@@ -16,15 +17,16 @@ import com.example.flashcards.databinding.StackBinding
 
 class StackAdapter(
     private val stacks: MutableList<Stack>,
-    private val onDeleteStack: (stack: Stack) -> Unit
+    private val onDeleteClicked: (stack: Stack) -> Unit
 ) : RecyclerView.Adapter<StackAdapter.ViewHolder>() {
+    private val initStacks = stacks.toMutableList() // initial data to reference when filtering
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(
         StackBinding.inflate(
             LayoutInflater.from(parent.context), parent, false
         ).root
     ) { stack ->
-        onDeleteStack(stack)
+        onDeleteClicked(stack)
     }
 
     override fun getItemCount() = stacks.size
@@ -43,14 +45,26 @@ class StackAdapter(
 
     fun delete(stack: Stack) {
         val pos = stacks.indexOf(stack)
+        initStacks.remove(stack)
         stacks.remove(stack)
         notifyItemRemoved(pos)
         notifyItemRangeChanged(pos, itemCount)
     }
 
+    @SuppressLint("NotifyDataSetChanged")
+    fun filter(expr: String) {
+        stacks.clear()
+        for (stack in initStacks) {
+            if (stack.title.contains(expr, ignoreCase = true)) {
+                stacks.add(stack)
+            }
+        }
+        notifyDataSetChanged()
+    }
+
     class ViewHolder(
         view: View,
-        private val onDeleteStack: (stack: Stack) -> Unit
+        private val onDeleteClicked: (stack: Stack) -> Unit
     ) : RecyclerView.ViewHolder(view) {
         private val binding = StackBinding.bind(view)
 
@@ -88,7 +102,7 @@ class StackAdapter(
                                 )
                             )
                         }
-                        R.id.delete -> onDeleteStack(stack)
+                        R.id.delete -> onDeleteClicked(stack)
                     }
                     true
                 }
