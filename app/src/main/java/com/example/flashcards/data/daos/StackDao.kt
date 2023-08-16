@@ -23,8 +23,8 @@ interface StackDao {
 
     @Transaction
     @Query("SELECT * FROM stack WHERE id = :stackId")
-    suspend fun loadStackAndCardsWithStackId(stackId: Int): List<StackAndCards>
+    suspend fun loadStackAndCards(stackId: Int): List<StackAndCards>
 
-    @Query("SELECT * FROM stack WHERE title LIKE '%' || :search || '%'")
-    suspend fun loadStacksLikeSearch(search: String): List<Stack>
+    @Query("SELECT * FROM stack WHERE title LIKE '%' || :query || '%' ORDER BY :order ASC LIMIT :limit OFFSET :offset")
+    suspend fun pageStacks(query: String, order: String, limit: Int, offset: Int): List<Stack>
 }

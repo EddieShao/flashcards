@@ -1,59 +1,40 @@
 package com.example.flashcards.viewmodels
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
+import com.example.flashcards.data.Database
 import com.example.flashcards.data.entities.Stack
-import com.example.flashcards.helpers.Setting
-import com.example.flashcards.helpers.SettingsHelper
-import com.example.flashcards.helpers.StackSortOrderOption
+import com.example.flashcards.data.paging.StackPagingSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class StackListViewModel : ViewModel() {
-    val stacks = MutableLiveData<MutableList<Stack>>(mutableListOf())
-
-    val confirmSearchText = MutableLiveData<Unit>()
     private var searchTextJob: Job? = null
 
-    fun loadStacks() {
-        viewModelScope.launch {
-            val data = stacks.value.let { stacks ->
-                if (stacks.isNullOrEmpty()) {
-                    withContext(Dispatchers.IO) {
-                        // TODO: replace with db call
-                        mutableListOf(
-                            Stack("This is a Title", 200, 0),
-                            Stack("Short", 100, 1),
-                            Stack("This is a very long title. The entire title may not fit inside the allocated space, so the user will see some trailing ellipses to indicate that the title continues.", 374, 2),
-                            Stack("Another Title to Test List Scrolling", 90, 3),
-                            Stack("Another", 800, 4)
-                        )
-                    }
-                } else {
-                    stacks
-                }
-            }
-            withContext(Dispatchers.Default) {
-                when (SettingsHelper.currentOptionOf<StackSortOrderOption>(Setting.STACK_SORT_ORDER)) {
-                    StackSortOrderOption.RECENTLY_ADDED -> data.sortBy { it.createdOn }
-                    StackSortOrderOption.TITLE -> data.sortBy { it.title }
-                    else -> {}
-                }
-            }
-            stacks.postValue(data)
+    private lateinit var stackPagingSource: StackPagingSource
+    val data = Pager(
+        PagingConfig(
+            pageSize = 20,
+            enablePlaceholders = false,
+            initialLoadSize = 20
+        ),
+    ) {
+        StackPagingSource(query = "", order = "title").also {
+            stackPagingSource = it
         }
-    }
+    }.flow.cachedIn(viewModelScope)
 
     fun deleteStack(stack: Stack) {
         viewModelScope.launch(Dispatchers.IO) {
-            // TODO: db call to delete
+            Database.instance.stackDao().deleteStacks(stack)
+            stackPagingSource.invalidate()
         }
-        stacks.value?.remove(stack)
     }
 
     // Start a count down to confirm the user's updated search bar text. Each time the user changes
@@ -62,14 +43,14 @@ class StackListViewModel : ViewModel() {
     //  -----
     // We do this to reduce the amount of times the stack list needs to update. If the user types
     // 5 characters in quick succession, we only want to show update results once, not 5 times.
-    fun notifySearchTextChanged() {
+    fun updateQuery(query: String) {
         searchTextJob?.let { job ->
             if (!job.isCancelled) job.cancel()
         }
         searchTextJob = viewModelScope.launch(Dispatchers.Default) {
             delay(timeMillis = 500) // TODO: change this to desired wait time
             if (isActive) {
-                confirmSearchText.postValue(Unit)
+                // TODO: update query string for paging source
             }
         }
     }

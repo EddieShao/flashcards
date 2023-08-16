@@ -9,7 +9,7 @@ data class Stack(
     val title: String,
 
     @ColumnInfo(name = "created_on")
-    val createdOn: Int,
+    val createdOn: Long,
 
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0

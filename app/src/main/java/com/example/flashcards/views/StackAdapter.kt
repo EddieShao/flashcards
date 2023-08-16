@@ -1,75 +1,36 @@
 package com.example.flashcards.views
 
-import android.annotation.SuppressLint
 import android.text.TextUtils
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.navigation.findNavController
+import androidx.paging.PagingDataAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.example.flashcards.helpers.NavArgs
 import com.example.flashcards.R
 import com.example.flashcards.data.entities.Stack
 import com.example.flashcards.databinding.StackBinding
+import com.example.flashcards.helpers.NavArgs
 
-class StackAdapter(
-    private val stacks: MutableList<Stack>,
-    private val onDeleteClicked: (stack: Stack) -> Unit
-) : RecyclerView.Adapter<StackAdapter.ViewHolder>() {
-    private val initStacks = stacks.toMutableList() // initial data to reference when filtering
+class StackAdapter : PagingDataAdapter<Stack, StackAdapter.ViewHolder>(DIFF_CALLBACK) {
+    companion object {
+        val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Stack>() {
+            override fun areItemsTheSame(oldItem: Stack, newItem: Stack): Boolean =
+                oldItem.id == newItem.id
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(
-        StackBinding.inflate(
-            LayoutInflater.from(parent.context), parent, false
-        ).root
-    ) { stack ->
-        onDeleteClicked(stack)
+            override fun areContentsTheSame(oldItem: Stack, newItem: Stack): Boolean =
+                oldItem == newItem
+        }
     }
 
-    override fun getItemCount() = stacks.size
+    inner class ViewHolder(val binding: StackBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(stacks[position])
-    }
-
-    fun insert(stack: Stack) {
-        // TODO
-    }
-
-    fun update(stack: Stack) {
-        // TODO
-    }
-
-    fun delete(stack: Stack) {
-        val pos = stacks.indexOf(stack)
-        initStacks.remove(stack)
-        stacks.remove(stack)
-        notifyItemRemoved(pos)
-        notifyItemRangeChanged(pos, itemCount)
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    fun filter(expr: String) {
-        stacks.clear()
-        for (stack in initStacks) {
-            if (stack.title.contains(expr, ignoreCase = true)) {
-                stacks.add(stack)
-            }
-        }
-        notifyDataSetChanged()
-    }
-
-    class ViewHolder(
-        view: View,
-        private val onDeleteClicked: (stack: Stack) -> Unit
-    ) : RecyclerView.ViewHolder(view) {
-        private val binding = StackBinding.bind(view)
-
-        fun bind(stack: Stack) {
-            binding.title.run {
+        getItem(position)?.let { stack ->
+            holder.binding.title.run {
                 text = stack.title
                 viewTreeObserver.addOnGlobalLayoutListener(
                     object : ViewTreeObserver.OnGlobalLayoutListener {
@@ -81,7 +42,7 @@ class StackAdapter(
                     }
                 )
             }
-            binding.playButton.setOnClickListener { playButton ->
+            holder.binding.playButton.setOnClickListener { playButton ->
                 playButton.findNavController().navigate(
                     R.id.action_stackListFragment_to_practiceFragment,
                     bundleOf(
@@ -89,7 +50,7 @@ class StackAdapter(
                     )
                 )
             }
-            binding.kebabMenu.setOnClickListener { kebabMenu ->
+            holder.binding.kebabMenu.setOnClickListener { kebabMenu ->
                 val popupMenu = PopupMenu(kebabMenu.context, kebabMenu)
                 popupMenu.menuInflater.inflate(R.menu.stack_menu, popupMenu.menu)
                 popupMenu.setOnMenuItemClickListener { menuItem ->
@@ -102,12 +63,20 @@ class StackAdapter(
                                 )
                             )
                         }
-                        R.id.delete -> onDeleteClicked(stack)
+                        R.id.delete -> {
+                            // TODO: callback delete item
+                        }
                     }
                     true
                 }
                 popupMenu.show()
             }
         }
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        return ViewHolder(
+            StackBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        )
     }
 }
