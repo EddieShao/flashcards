@@ -57,11 +57,25 @@ class StackListFragment : Fragment() {
             findNavController().navigate(R.id.action_stackListFragment_to_settingsFragment)
         }
 
+        binding.stackList.layoutManager = LinearLayoutManager(context)
+        binding.stackList.addItemDecoration(SpaceDivider(sizeDp = 48, verticalPadding = true))
         val adapter = StackAdapter { stack ->
             showConfirmDeleteDialog(stack)
         }
-        binding.stackList.layoutManager = LinearLayoutManager(context)
-        binding.stackList.addItemDecoration(SpaceDivider(sizeDp = 48, verticalPadding = true))
+        adapter.addLoadStateListener { states ->
+            binding.beginnerNote.visibility =
+                if (states.append.endOfPaginationReached && adapter.itemCount < 1) {
+                    binding.beginnerNote.text =
+                        if (binding.editText.text.isNullOrBlank()) {
+                            "Create your first flashcard"
+                        } else {
+                            "Nothing to see here..."
+                        }
+                    View.VISIBLE
+                } else {
+                    View.INVISIBLE
+                }
+        }
         binding.stackList.adapter = adapter.withLoadStateFooter(StackLoadStateAdapter())
         lifecycleScope.launch {
             viewModel.data.collectLatest {
