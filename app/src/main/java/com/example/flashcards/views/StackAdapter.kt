@@ -15,7 +15,9 @@ import com.example.flashcards.data.entities.Stack
 import com.example.flashcards.databinding.StackBinding
 import com.example.flashcards.helpers.NavArgs
 
-class StackAdapter : PagingDataAdapter<Stack, StackAdapter.ViewHolder>(DIFF_CALLBACK) {
+class StackAdapter(
+    private val onDeleteClicked: (stack: Stack) -> Unit
+) : PagingDataAdapter<Stack, StackAdapter.ViewHolder>(DIFF_CALLBACK) {
     companion object {
         val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Stack>() {
             override fun areItemsTheSame(oldItem: Stack, newItem: Stack): Boolean =
@@ -63,9 +65,7 @@ class StackAdapter : PagingDataAdapter<Stack, StackAdapter.ViewHolder>(DIFF_CALL
                                 )
                             )
                         }
-                        R.id.delete -> {
-                            // TODO: callback delete item
-                        }
+                        R.id.delete -> onDeleteClicked(stack)
                     }
                     true
                 }

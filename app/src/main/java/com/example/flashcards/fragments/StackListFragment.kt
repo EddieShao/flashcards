@@ -41,7 +41,7 @@ class StackListFragment : Fragment() {
 
         // hide keyboard when focus on search bar is lost
         binding.editText.onFocusChangeListener =
-            View.OnFocusChangeListener { _, hasFocus ->
+            View.OnFocusChangeListener { editText, hasFocus ->
                 lifecycleScope.launch {
                     if (!hasFocus) {
                         SystemHelper.hideKeypad(binding.editText.windowToken)
@@ -57,7 +57,9 @@ class StackListFragment : Fragment() {
             findNavController().navigate(R.id.action_stackListFragment_to_settingsFragment)
         }
 
-        val adapter = StackAdapter()
+        val adapter = StackAdapter { stack ->
+            showConfirmDeleteDialog(stack)
+        }
         binding.stackList.layoutManager = LinearLayoutManager(context)
         binding.stackList.addItemDecoration(SpaceDivider(sizeDp = 48, verticalPadding = true))
         binding.stackList.adapter = adapter.withLoadStateFooter(StackLoadStateAdapter())
@@ -67,7 +69,7 @@ class StackListFragment : Fragment() {
             }
         }
 
-        binding.fab.setOnClickListener { _ ->
+        binding.fab.setOnClickListener { fab ->
             findNavController().navigate(R.id.action_stackListFragment_to_editorFragment)
         }
     }
@@ -81,11 +83,11 @@ class StackListFragment : Fragment() {
         Dialog(context).run {
             setTitle("Delete Cards")
             setMessage("Are you sure you want to delete this set of cards?")
-            setPositiveButton("Delete") { dialog, _ ->
+            setPositiveButton("Delete") { dialog, which ->
                 viewModel.deleteStack(stack)
                 dialog.dismiss()
             }
-            setNegativeButton("Cancel") { dialog, _ ->
+            setNegativeButton("Cancel") { dialog, which ->
                 dialog.cancel()
             }
             show()
