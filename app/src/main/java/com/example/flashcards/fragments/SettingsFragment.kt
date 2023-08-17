@@ -10,7 +10,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.flashcards.databinding.FragmentSettingsBinding
 import com.example.flashcards.viewmodels.SettingsViewModel
-import com.example.flashcards.views.SettingAdapter
+import com.example.flashcards.adapters.SettingAdapter
 import com.example.flashcards.views.SpaceDivider
 
 class SettingsFragment : Fragment() {

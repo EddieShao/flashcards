@@ -17,8 +17,8 @@ import com.example.flashcards.databinding.FragmentStackListBinding
 import com.example.flashcards.viewmodels.StackListViewModel
 import com.example.flashcards.views.Dialog
 import com.example.flashcards.views.SpaceDivider
-import com.example.flashcards.views.StackAdapter
-import com.example.flashcards.views.StackLoadStateAdapter
+import com.example.flashcards.adapters.StackAdapter
+import com.example.flashcards.adapters.StackLoadStateAdapter
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 

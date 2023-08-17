@@ -1,4 +1,4 @@
-package com.example.flashcards.views
+package com.example.flashcards.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -11,14 +11,14 @@ import com.example.flashcards.databinding.LoadStateBinding
 class StackLoadStateAdapter : LoadStateAdapter<StackLoadStateAdapter.ViewHolder>() {
     inner class ViewHolder(val binding: LoadStateBinding) : RecyclerView.ViewHolder(binding.root)
 
-    override fun onBindViewHolder(holder: StackLoadStateAdapter.ViewHolder, loadState: LoadState) {
+    override fun onBindViewHolder(holder: ViewHolder, loadState: LoadState) {
         holder.binding.progress.isVisible = loadState is LoadState.Loading
     }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         loadState: LoadState
-    ): StackLoadStateAdapter.ViewHolder {
+    ): ViewHolder {
         return ViewHolder(
             LoadStateBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         )

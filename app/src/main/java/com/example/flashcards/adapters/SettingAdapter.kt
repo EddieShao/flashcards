@@ -1,4 +1,4 @@
-package com.example.flashcards.views
+package com.example.flashcards.adapters
 
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
