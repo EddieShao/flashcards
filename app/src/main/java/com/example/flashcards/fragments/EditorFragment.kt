@@ -7,10 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.flashcards.adapters.CardEditAdapter
 import com.example.flashcards.viewmodels.EditorViewModel
 import com.example.flashcards.databinding.FragmentEditorBinding
 import com.example.flashcards.helpers.NavArgs
 import com.example.flashcards.helpers.SystemHelper
+import com.example.flashcards.views.SpaceDivider
 import kotlinx.coroutines.launch
 
 class EditorFragment : Fragment() {
@@ -18,6 +21,8 @@ class EditorFragment : Fragment() {
 
     private var _binding: FragmentEditorBinding? = null
     private val binding get() = _binding!!
+
+    private val adapter = CardEditAdapter(mutableListOf())
 
     private var stackId: Int? = null // null => create new set, otherwise => update existing set
 
@@ -31,7 +36,7 @@ class EditorFragment : Fragment() {
             }
         }
         stackId?.let { stackId ->
-            viewModel.loadCards(stackId)
+            viewModel.loadData(stackId)
         }
     }
 
@@ -46,15 +51,10 @@ class EditorFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // hide keyboard when focus on edit text is lost
-        binding.title.onFocusChangeListener =
-            View.OnFocusChangeListener { editText, hasFocus ->
-                lifecycleScope.launch {
-                    if (!hasFocus) {
-                        SystemHelper.hideKeypad(binding.title.windowToken)
-                    }
-                }
-            }
+        binding.title.onFocusChangeListener = SystemHelper.hideKeypadListener
+        binding.cardList.layoutManager = LinearLayoutManager(context)
+        binding.cardList.addItemDecoration(SpaceDivider(sizeDp = 48, verticalPadding = true))
+        binding.cardList.adapter = adapter
 
         initObservers()
     }
@@ -65,8 +65,11 @@ class EditorFragment : Fragment() {
     }
 
     private fun initObservers() {
+        viewModel.title.observe(viewLifecycleOwner) { title ->
+            binding.title.setText(title)
+        }
         viewModel.cards.observe(viewLifecycleOwner) { cards ->
-            // TODO: populate adapter
+            adapter.submitData(cards)
         }
     }
 }

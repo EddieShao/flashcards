@@ -42,7 +42,7 @@
 
     </LinearLayout>
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/text"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -52,7 +52,7 @@
         android:textSize="16sp"
         android:textColor="?colorPrimary"
         android:minHeight="90dp"
-        android:backgroundTint="?colorSurface"
+        android:backgroundTint="@android:color/transparent"
         tools:text="This is a description of the definition on the other side of this card."/>
 
     <androidx.appcompat.widget.AppCompatImageView

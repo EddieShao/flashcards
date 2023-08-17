@@ -39,15 +39,7 @@ class StackListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // hide keyboard when focus on search bar is lost
-        binding.editText.onFocusChangeListener =
-            View.OnFocusChangeListener { editText, hasFocus ->
-                lifecycleScope.launch {
-                    if (!hasFocus) {
-                        SystemHelper.hideKeypad(binding.editText.windowToken)
-                    }
-                }
-            }
+        binding.editText.onFocusChangeListener = SystemHelper.hideKeypadListener
 
         binding.editText.doOnTextChanged { text, start, before, count ->
             viewModel.updateQuery(text.toString())

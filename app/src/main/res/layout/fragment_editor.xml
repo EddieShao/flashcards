@@ -78,7 +78,7 @@
                 android:id="@+id/card_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="true"
+                android:nestedScrollingEnabled="false"
                 tools:listitem="@layout/card_front"/>
 
         </LinearLayout>

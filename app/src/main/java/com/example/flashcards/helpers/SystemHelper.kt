@@ -3,10 +3,17 @@ package com.example.flashcards.helpers
 import android.app.Activity
 import android.content.Context
 import android.os.IBinder
+import android.view.View
 import android.view.inputmethod.InputMethodManager
 
 object SystemHelper {
     private var getService: ((name: String) -> Any)? = null
+
+    val hideKeypadListener = View.OnFocusChangeListener { view, hasFocus ->
+        if (!hasFocus) {
+            hideKeypad(view.windowToken)
+        }
+    }
 
     fun init(activity: Activity) {
         getService = { name -> activity.getSystemService(name) }
