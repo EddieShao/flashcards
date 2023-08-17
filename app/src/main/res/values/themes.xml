@@ -4,10 +4,12 @@
         <!-- Customize your light theme here. -->
         <item name="android:fontFamily">@font/gloria_hallelujah</item>
         <item name="android:background">@color/white</item>
+        <item name="colorSurface">@color/sky</item>
         <item name="colorOnBackground">@color/gray</item>
         <item name="colorPrimary">@color/black</item>
         <item name="colorSecondary">@color/blue</item>
         <item name="colorTertiary">@color/red</item>
+        <item name="colorAccent">@color/green</item>
     </style>
 
     <style name="Theme.Flashcards" parent="Base.Theme.Flashcards" />

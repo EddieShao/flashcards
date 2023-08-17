@@ -44,7 +44,7 @@ class StackAdapter(
                     }
                 )
             }
-            holder.binding.playButton.setOnClickListener { playButton ->
+            holder.binding.play.setOnClickListener { playButton ->
                 playButton.findNavController().navigate(
                     R.id.action_stackListFragment_to_practiceFragment,
                     bundleOf(

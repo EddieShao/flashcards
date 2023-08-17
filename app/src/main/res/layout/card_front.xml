@@ -1,18 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="16dp"
-    android:paddingBottom="30dp"
-    android:paddingStart="16dp"
-    android:paddingEnd="30dp"
-    android:background="@drawable/stack"
-    android:focusableInTouchMode="true"
-    android:focusable="true"
-    android:clickable="true">
+    android:padding="16dp"
+    android:background="@drawable/card">
 
     <LinearLayout
         android:orientation="horizontal"
@@ -20,14 +13,14 @@
         android:layout_height="wrap_content">
 
         <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@+id/play"
+            android:id="@+id/flip_to_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="12dp"
-            android:src="@drawable/play_24"
+            android:src="@drawable/flip_to_back_30"
             android:tint="?colorPrimary"
             android:backgroundTint="?android:background"
-            android:contentDescription="practice this card set"/>
+            android:contentDescription="flip to back side"/>
 
         <!-- spacing to align items to ends of card -->
         <View
@@ -36,20 +29,20 @@
             android:layout_weight="1"/>
 
         <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@+id/kebab_menu"
+            android:id="@+id/delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:padding="12dp"
-            android:src="@drawable/kebab_24"
-            android:tint="?colorPrimary"
+            android:padding="16dp"
+            android:src="@drawable/close_20"
+            android:tint="?colorTertiary"
             android:backgroundTint="?android:background"
-            android:contentDescription="more options"/>
+            android:contentDescription="flip to back side"/>
 
     </LinearLayout>
 
     <TextView
-        android:id="@+id/title"
+        android:id="@+id/text"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginHorizontal="12dp"
@@ -60,8 +53,14 @@
         android:minHeight="90dp"
         tools:text="Definition"/>
 
-    <View
-        android:layout_width="0dp"
-        android:layout_height="48dp"/>
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/face"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:padding="8dp"
+        android:minHeight="46dp"
+        tools:src="@drawable/happy_30"
+        tools:tint="?colorAccent"/>
 
 </LinearLayout>

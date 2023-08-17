@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    android:background="@drawable/card_tinted">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="?colorSurface">
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/flip_to_front"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:src="@drawable/flip_to_front_30"
+            android:tint="?colorPrimary"
+            android:backgroundTint="?colorSurface"
+            android:contentDescription="flip to back side"/>
+
+        <!-- spacing to align items to ends of card -->
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:padding="16dp"
+            android:src="@drawable/close_20"
+            android:tint="?colorTertiary"
+            android:backgroundTint="?colorSurface"
+            android:contentDescription="flip to back side"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="12dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:textColor="?colorPrimary"
+        android:minHeight="90dp"
+        android:backgroundTint="?colorSurface"
+        tools:text="This is a description of the definition on the other side of this card."/>
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/face"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:padding="8dp"
+        android:minHeight="46dp"
+        android:backgroundTint="?colorSurface"
+        tools:src="@drawable/happy_30"
+        tools:tint="?colorAccent"/>
+
+</LinearLayout>

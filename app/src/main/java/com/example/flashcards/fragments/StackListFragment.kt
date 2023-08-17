@@ -63,18 +63,19 @@ class StackListFragment : Fragment() {
             showConfirmDeleteDialog(stack)
         }
         adapter.addLoadStateListener { states ->
-            binding.beginnerNote.visibility =
-                if (states.append.endOfPaginationReached && adapter.itemCount < 1) {
+            if (states.append.endOfPaginationReached) {
+                if (adapter.itemCount < 1) {
                     binding.beginnerNote.text =
                         if (binding.editText.text.isNullOrBlank()) {
-                            "Create your first flashcard"
+                            "Create your first set"
                         } else {
                             "Nothing to see here..."
                         }
-                    View.VISIBLE
+                    binding.beginnerNote.visibility = View.VISIBLE
                 } else {
-                    View.INVISIBLE
+                    binding.beginnerNote.visibility = View.INVISIBLE
                 }
+            }
         }
         binding.stackList.adapter = adapter.withLoadStateFooter(StackLoadStateAdapter())
         lifecycleScope.launch {
