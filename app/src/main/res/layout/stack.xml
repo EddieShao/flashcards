@@ -9,7 +9,10 @@
     android:paddingBottom="30dp"
     android:paddingStart="16dp"
     android:paddingEnd="30dp"
-    android:background="@drawable/stack">
+    android:background="@drawable/stack"
+    android:focusableInTouchMode="true"
+    android:clickable="true"
+    android:focusable="true">
 
     <LinearLayout
         android:orientation="horizontal"

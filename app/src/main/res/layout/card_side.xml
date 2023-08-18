@@ -5,23 +5,27 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="16dp"
-    android:background="@drawable/card_tinted">
+    android:focusableInTouchMode="true"
+    android:clickable="true"
+    android:focusable="true"
+    tools:background="@drawable/card">
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="?colorSurface">
+        android:backgroundTint="@android:color/transparent"
+        android:minHeight="46dp">
 
         <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@+id/flip_to_front"
+            android:id="@+id/flip"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="12dp"
-            android:src="@drawable/flip_to_front_30"
             android:tint="?colorPrimary"
-            android:backgroundTint="?colorSurface"
-            android:contentDescription="flip to back side"/>
+            tools:backgroundTint="?android:background"
+            tools:src="@drawable/flip_to_back_30"
+            tools:contentDescription="flip to side"/>
 
         <!-- spacing to align items to ends of card -->
         <View
@@ -37,23 +41,46 @@
             android:padding="16dp"
             android:src="@drawable/close_20"
             android:tint="?colorTertiary"
-            android:backgroundTint="?colorSurface"
-            android:contentDescription="flip to back side"/>
+            tools:backgroundTint="?android:background"
+            tools:contentDescription="delete card"/>
 
     </LinearLayout>
 
-    <androidx.appcompat.widget.AppCompatEditText
-        android:id="@+id/text"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginHorizontal="12dp"
         android:layout_weight="1"
-        android:gravity="center"
-        android:textSize="16sp"
-        android:textColor="?colorPrimary"
-        android:minHeight="90dp"
+        android:layout_marginHorizontal="12dp"
         android:backgroundTint="@android:color/transparent"
-        tools:text="This is a description of the definition on the other side of this card."/>
+        android:minHeight="90dp">
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/spacer_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:enabled="false"
+            android:clickable="false"
+            android:longClickable="false"
+            android:visibility="invisible"
+            tools:text="Definition"
+            tools:textSize="16sp"/>
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:textColor="?colorPrimary"
+            android:textCursorDrawable="@null"
+            android:hint="Tap to edit"
+            android:backgroundTint="@android:color/transparent"
+            tools:text="Definition"
+            tools:textSize="20sp"/>
+
+    </FrameLayout>
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/face"
@@ -62,7 +89,7 @@
         android:layout_gravity="end"
         android:padding="8dp"
         android:minHeight="46dp"
-        android:backgroundTint="?colorSurface"
+        android:backgroundTint="@android:color/transparent"
         tools:src="@drawable/happy_30"
         tools:tint="?colorAccent"/>
 

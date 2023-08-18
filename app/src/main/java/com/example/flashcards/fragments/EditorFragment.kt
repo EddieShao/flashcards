@@ -6,15 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.flashcards.adapters.CardEditAdapter
+import com.example.flashcards.adapters.CardAdapter
 import com.example.flashcards.viewmodels.EditorViewModel
 import com.example.flashcards.databinding.FragmentEditorBinding
 import com.example.flashcards.helpers.NavArgs
 import com.example.flashcards.helpers.SystemHelper
 import com.example.flashcards.views.SpaceDivider
-import kotlinx.coroutines.launch
 
 class EditorFragment : Fragment() {
     private val viewModel by viewModels<EditorViewModel>()
@@ -22,7 +20,7 @@ class EditorFragment : Fragment() {
     private var _binding: FragmentEditorBinding? = null
     private val binding get() = _binding!!
 
-    private val adapter = CardEditAdapter(mutableListOf())
+    private val adapter = CardAdapter(mutableListOf(), showFlip = true, showDelete = true)
 
     private var stackId: Int? = null // null => create new set, otherwise => update existing set
 
@@ -69,7 +67,8 @@ class EditorFragment : Fragment() {
             binding.title.setText(title)
         }
         viewModel.cards.observe(viewLifecycleOwner) { cards ->
-            adapter.submitData(cards)
+            // boolean doesn't matter since we're not showing the face
+            adapter.submitData(cards.map { card -> card to false })
         }
     }
 }
