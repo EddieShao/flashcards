@@ -8,13 +8,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.animation.doOnEnd
+import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import com.example.flashcards.R
 import com.example.flashcards.data.entities.Card
 import com.example.flashcards.databinding.CardBinding
 import com.example.flashcards.helpers.SystemHelper
-import com.example.flashcards.helpers.ThemeHelper
 
 class CardAdapter(
     private val cards: MutableList<Pair<Card, Boolean>>, // boolean: 0 == sad, 1 == happy
@@ -37,7 +37,7 @@ class CardAdapter(
             root.background = AppCompatResources.getDrawable(ctx, R.drawable.card)
             flip.run {
                 if (showFlip) {
-                    background.setTint(ThemeHelper.getThemeColor(androidx.appcompat.R.attr.background, ctx))
+                    background.setTint(ContextCompat.getColor(ctx, R.color.background))
                     setImageResource(R.drawable.flip_to_back_30)
                     contentDescription = "Flip to back side"
                     setOnClickListener { button ->
@@ -49,7 +49,7 @@ class CardAdapter(
             }
             delete.run {
                 if (showDelete) {
-                    background.setTint(ThemeHelper.getThemeColor(androidx.appcompat.R.attr.background, ctx))
+                    background.setTint(ContextCompat.getColor(ctx, R.color.background))
                     contentDescription = "Delete card"
                     setOnClickListener { button ->
                         // TODO: delete callback
@@ -76,14 +76,7 @@ class CardAdapter(
                     val correct = cards[position].second
                     setImageResource(if (correct) R.drawable.happy_30 else R.drawable.sad_30)
                     setColorFilter(
-                        ThemeHelper.getThemeColor(
-                            if (correct) {
-                                androidx.appcompat.R.attr.colorAccent
-                            } else {
-                                com.google.android.material.R.attr.colorTertiary
-                            },
-                            ctx
-                        ),
+                        ContextCompat.getColor(ctx, if (correct) R.color.green else R.color.red),
                         android.graphics.PorterDuff.Mode.SRC_IN
                     )
                 } else {
@@ -95,7 +88,7 @@ class CardAdapter(
             root.background = AppCompatResources.getDrawable(ctx, R.drawable.card_tinted)
             flip.run {
                 if (showFlip) {
-                    background.setTint(ThemeHelper.getThemeColor(com.google.android.material.R.attr.colorSurface, ctx))
+                    background.setTint(ContextCompat.getColor(ctx, R.color.background_tinted))
                     setImageResource(R.drawable.flip_to_front_30)
                     contentDescription = "Flip to front side"
                     setOnClickListener { button ->
@@ -107,7 +100,7 @@ class CardAdapter(
             }
             delete.run {
                 if (showDelete) {
-                    background.setTint(ThemeHelper.getThemeColor(com.google.android.material.R.attr.colorSurface, ctx))
+                    background.setTint(ContextCompat.getColor(ctx, R.color.background_tinted))
                     contentDescription = "Delete card"
                     setOnClickListener { button ->
                         // TODO: delete callback
@@ -134,14 +127,7 @@ class CardAdapter(
                     val correct = cards[position].second
                     setImageResource(if (correct) R.drawable.happy_30 else R.drawable.sad_30)
                     setColorFilter(
-                        ThemeHelper.getThemeColor(
-                            if (correct) {
-                                androidx.appcompat.R.attr.colorAccent
-                            } else {
-                                com.google.android.material.R.attr.colorTertiary
-                            },
-                            ctx
-                        ),
+                        ContextCompat.getColor(ctx, if (correct) R.color.green else R.color.red),
                         android.graphics.PorterDuff.Mode.SRC_IN
                     )
                 } else {

@@ -13,8 +13,8 @@
         android:layout_marginHorizontal="12dp"
         android:layout_marginTop="12dp"
         android:src="@drawable/back_36"
-        android:tint="?colorPrimary"
-        android:backgroundTint="?android:background"
+        android:tint="@color/primary"
+        android:backgroundTint="@color/background"
         android:contentDescription="back to home"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>

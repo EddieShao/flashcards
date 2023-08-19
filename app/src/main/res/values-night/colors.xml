@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- dynamic colors -->
+    <color name="background">@color/alt_black</color>
+    <color name="background_tinted">@color/dark_gray</color>
+    <color name="primary">@color/white</color>
+    <color name="secondary">@color/light_gray</color>
+    <color name="red">#FFF65245</color>
+    <color name="green">#FF41C464</color>
+    <color name="blue">#FF5390F4</color>
+</resources>

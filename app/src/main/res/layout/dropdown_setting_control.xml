@@ -14,17 +14,19 @@
         android:minHeight="48dp"
         android:minWidth="48dp"
         android:src="@drawable/dropdown_24"
-        android:tint="?colorPrimary"
-        android:backgroundTint="?android:background"
-        android:layout_gravity="center_vertical"/>
+        android:tint="@color/primary"
+        android:backgroundTint="@color/background"
+        android:layout_gravity="top"/>
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/choice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="18sp"
         android:lineSpacingMultiplier="0.7"
         android:gravity="end"
+        android:layout_gravity="center_vertical"
+        android:textColor="@color/primary"
         tools:text="Choice"/>
 
 </LinearLayout>

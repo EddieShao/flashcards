@@ -15,8 +15,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="12dp"
         android:src="@drawable/back_36"
-        android:tint="?colorPrimary"
-        android:backgroundTint="?android:background"
+        android:tint="@color/primary"
+        android:backgroundTint="@color/background"
         android:contentDescription="back to home"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
@@ -27,8 +27,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="12dp"
         android:src="@drawable/check_36"
-        android:tint="?colorPrimary"
-        android:backgroundTint="?android:background"
+        android:tint="@color/primary"
+        android:backgroundTint="@color/background"
         android:contentDescription="save changes"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
@@ -42,7 +42,7 @@
         android:textCursorDrawable="@null"
         android:maxLines="1"
         android:inputType="text"
-        android:backgroundTint="?colorPrimary"
+        android:backgroundTint="@color/primary"
         android:hint="Name"
         app:layout_constraintTop_toBottomOf="@+id/save"/>
 
@@ -71,7 +71,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/add_50"
-                    android:tint="?colorOnBackground"
+                    android:tint="@color/secondary"
                     android:background="@null"
                     android:layout_gravity="center"/>
 

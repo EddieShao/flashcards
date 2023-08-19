@@ -22,8 +22,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="12dp"
-            android:tint="?colorPrimary"
-            tools:backgroundTint="?android:background"
+            android:tint="@color/primary"
+            tools:backgroundTint="@color/background"
             tools:src="@drawable/flip_to_back_30"
             tools:contentDescription="flip to side"/>
 
@@ -40,8 +40,8 @@
             android:layout_gravity="end"
             android:padding="16dp"
             android:src="@drawable/close_20"
-            android:tint="?colorTertiary"
-            tools:backgroundTint="?android:background"
+            android:tint="@color/red"
+            tools:backgroundTint="@color/background"
             tools:contentDescription="delete card"/>
 
     </LinearLayout>
@@ -73,7 +73,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:layout_gravity="center"
-            android:textColor="?colorPrimary"
+            android:textColor="@color/primary"
             android:textCursorDrawable="@null"
             android:hint="Tap to edit"
             android:backgroundTint="@android:color/transparent"
@@ -91,6 +91,6 @@
         android:minHeight="46dp"
         android:backgroundTint="@android:color/transparent"
         tools:src="@drawable/happy_30"
-        tools:tint="?colorAccent"/>
+        tools:tint="@color/green"/>
 
 </LinearLayout>

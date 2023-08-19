@@ -4,12 +4,5 @@
         <!-- Customize your dark theme here. -->
         <item name="android:fontFamily">@font/gloria_hallelujah</item>
         <item name="android:background">@color/alt_black</item>
-        <item name="background">@color/alt_black</item>
-        <item name="colorSurface">@color/dark_gray</item>
-        <item name="colorOnBackground">@color/light_gray</item>
-        <item name="colorPrimary">@color/white</item>
-        <item name="colorSecondary">@color/alt_blue</item>
-        <item name="colorTertiary">@color/alt_red</item>
-        <item name="colorAccent">@color/alt_green</item>
     </style>
 </resources>

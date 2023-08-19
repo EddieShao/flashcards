@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- static colors: same regardless of theme -->
     <color name="white">#FFFFFFFF</color>
     <color name="sky">#FFEEF9F9</color>
     <color name="light_gray">#FFA9A9A9</color>
@@ -7,10 +8,13 @@
     <color name="dark_gray">#FF5F5F5F</color>
     <color name="alt_black">#FF424242</color>
     <color name="black">#FF333333</color>
-    <color name="blue">#FF4F9AE0</color>
-    <color name="alt_blue">#FF5390F4</color>
+
+    <!-- dynamic colors -->
+    <color name="background">@color/white</color>
+    <color name="background_tinted">@color/sky</color>
+    <color name="primary">@color/black</color>
+    <color name="secondary">@color/gray</color>
     <color name="red">#FFD65050</color>
-    <color name="alt_red">#FFF65245</color>
     <color name="green">#FF51A842</color>
-    <color name="alt_green">#FF41C464</color>
+    <color name="blue">#FF4F9AE0</color>
 </resources>
