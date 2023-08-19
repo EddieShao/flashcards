@@ -39,10 +39,22 @@ class StackListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.editText.onFocusChangeListener = SystemHelper.hideKeypadListener
+        binding.searchIcon.setOnClickListener { searchIcon ->
+            binding.editText.requestFocus()
+            SystemHelper.showKeypad(binding.editText)
+        }
 
+        binding.editText.onFocusChangeListener = SystemHelper.hideKeypadListener
         binding.editText.doOnTextChanged { text, start, before, count ->
             viewModel.updateQuery(text.toString())
+            binding.clearText.visibility =
+                if (text.isNullOrEmpty()) View.INVISIBLE else View.VISIBLE
+        }
+
+        binding.clearText.visibility =
+            if (binding.editText.text.isNullOrEmpty()) View.INVISIBLE else View.VISIBLE
+        binding.clearText.setOnClickListener {
+            binding.editText.setText("")
         }
 
         binding.settings.setOnClickListener { _ ->
@@ -58,7 +70,7 @@ class StackListFragment : Fragment() {
             if (states.append.endOfPaginationReached) {
                 if (adapter.itemCount < 1) {
                     binding.beginnerNote.text =
-                        if (binding.editText.text.isNullOrBlank()) {
+                        if (binding.editText.text.isNullOrEmpty()) {
                             "Create your first set"
                         } else {
                             "Nothing to see here..."

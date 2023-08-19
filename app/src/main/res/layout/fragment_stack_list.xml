@@ -10,54 +10,65 @@
     android:focusable="true"
     tools:context=".fragments.StackListFragment">
 
-    <com.google.android.material.textfield.TextInputLayout
+    <LinearLayout
         android:id="@+id/search_bar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:hint="Search"
-        app:hintTextColor="@color/primary"
-        app:boxStrokeWidth="0dp"
-        app:boxStrokeWidthFocused="0dp"
-        app:endIconMode="clear_text"
-        app:endIconTint="@color/primary"
-        app:endIconDrawable="@drawable/close_20"
-        app:startIconDrawable="@drawable/search_24"
-        app:startIconTint="@color/primary"
-        app:startIconContentDescription="search icon"
+        android:orientation="horizontal"
+        android:layout_margin="12dp"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/settings"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edit_text"
-            android:layout_width="match_parent"
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/search_icon"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:padding="12dp"
+            android:src="@drawable/search_24"/>
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/edit_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:paddingVertical="4dp"
             android:maxLines="1"
-            android:inputType="text" />
+            android:inputType="text"
+            android:hint="Search"
+            android:background="@null"/>
 
-    </com.google.android.material.textfield.TextInputLayout>
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/clear_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:backgroundTint="@color/background"
+            android:contentDescription="Clear text"
+            android:src="@drawable/close_20"
+            android:tint="@color/primary"/>
 
-    <androidx.appcompat.widget.AppCompatImageButton
-        android:id="@+id/settings"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_marginEnd="12dp"
-        android:src="@drawable/settings_36"
-        android:tint="@color/primary"
-        android:backgroundTint="@color/background"
-        android:contentDescription="settings"
-        app:layout_constraintTop_toTopOf="@id/search_bar"
-        app:layout_constraintBottom_toBottomOf="@id/search_bar"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/settings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/settings_36"
+            android:tint="@color/primary"
+            android:backgroundTint="@color/background"
+            android:contentDescription="settings"/>
+
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/stack_list"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginHorizontal="12dp"
-        app:layout_constraintStart_toStartOf="@id/search_bar"
-        app:layout_constraintEnd_toEndOf="@id/settings"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="12dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/search_bar"
         tools:listitem="@layout/stack" />
