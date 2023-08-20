@@ -68,16 +68,19 @@ class StackListFragment : Fragment() {
         }
         adapter.addLoadStateListener { states ->
             if (states.append.endOfPaginationReached) {
-                if (adapter.itemCount < 1) {
-                    binding.beginnerNote.text =
-                        if (binding.editText.text.isNullOrEmpty()) {
-                            "Create your first set"
-                        } else {
-                            "Nothing to see here..."
-                        }
-                    binding.beginnerNote.visibility = View.VISIBLE
-                } else {
-                    binding.beginnerNote.visibility = View.INVISIBLE
+                // use nullable binding because load state might change outside of lifecycle
+                _binding?.let { binding ->
+                    if (adapter.itemCount < 1) {
+                        binding.beginnerNote.text =
+                            if (binding.editText.text.isNullOrEmpty()) {
+                                "Create your first set"
+                            } else {
+                                "Nothing to see here..."
+                            }
+                        binding.beginnerNote.visibility = View.VISIBLE
+                    } else {
+                        binding.beginnerNote.visibility = View.INVISIBLE
+                    }
                 }
             }
         }
@@ -100,7 +103,7 @@ class StackListFragment : Fragment() {
 
     private fun showConfirmDeleteDialog(stack: Stack) {
         Dialog(context).run {
-            setTitle("Delete Cards")
+            setTitle("Delete Card Set")
             setMessage("Are you sure you want to delete this set of cards?")
             setPositiveButton("Delete") { dialog, which ->
                 viewModel.deleteStack(stack)

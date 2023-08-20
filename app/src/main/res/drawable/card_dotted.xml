@@ -7,4 +7,5 @@
         android:color="@color/secondary"
         android:dashGap="10dp"
         android:dashWidth="15dp"/>
+    <solid android:color="@color/background"/>
 </shape>

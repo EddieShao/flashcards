@@ -3,35 +3,66 @@ package com.example.flashcards.viewmodels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.flashcards.adapters.CardAdapterState
+import com.example.flashcards.data.Database
 import com.example.flashcards.data.entities.Card
 import com.example.flashcards.data.entities.Stack
 import com.example.flashcards.data.entities.StackAndCards
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.Calendar
 
 class EditorViewModel : ViewModel() {
-    private val toCreate = mutableListOf<Card>()
-    private val toUpdate = mutableListOf<Card>()
-    private val toDelete = mutableListOf<Card>()
-
-    val title = MutableLiveData<String>()
-
-    val cards = MutableLiveData<MutableList<Card>>()
+    val initData = MutableLiveData<StackAndCards>()
+    val initTitle get() = initData.value?.stack?.title.orEmpty()
 
     fun loadData(stackId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            // TODO: replace with db call
-            val data = StackAndCards(
-                Stack("This is a title", 5000, 0),
-                listOf(
-                    Card("Definition", "This is a description of the definition.", stackId, 0),
-                    Card("Lorem ipsum", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.", stackId, 1),
-                    Card("This is a really long definition. I'm not sure why you'd want to write a definition this long, but whatever suits your needs I guess.", "Short.", stackId, 2),
-                    Card("Another", "This is another description.", stackId, 3)
-                )
+            val data = Database.instance.stackDao().loadStackAndCards(stackId)
+            initData.postValue(data)
+        }
+    }
+
+    fun createData(title: String, adapterState: CardAdapterState) {
+        assert(adapterState.deletedCards.isEmpty())
+        viewModelScope.launch(Dispatchers.IO) {
+            val stackId = Database.instance.stackDao().insertStack(
+                Stack(title, Calendar.getInstance().timeInMillis)
             )
-            title.postValue(data.stack.title)
-            cards.postValue(data.cards.toMutableList())
+            val toCreate = withContext(Dispatchers.Default) {
+                adapterState.cards.map { card ->
+                    // TODO: WARNING - cast to int might result in long overflow
+                    Card(card.front, card.back, stackId.toInt())
+                }
+            }
+            Database.instance.cardDao().insertCards(*toCreate.toTypedArray())
+        }
+    }
+
+    fun updateData(stackId: Int, title: String, adapterState: CardAdapterState) {
+        viewModelScope.launch(Dispatchers.Default) {
+            val toCreate = adapterState.cards.filter { card -> card.id == null }.map { card ->
+                Card(card.front, card.back, stackId)
+            }
+            val toUpdate = adapterState.cards.mapNotNull { card ->
+                card.id?.let { id ->
+                    Card(card.front, card.back, stackId, id)
+                }
+            }
+            withContext(Dispatchers.IO) {
+                if (title != initTitle) {
+                    initData.value?.stack?.let { initStack ->
+                        Database.instance.stackDao().updateStacks(
+                            Stack(title, initStack.createdOn, initStack.id)
+                        )
+                    }
+                }
+                with(Database.instance.cardDao()) {
+                    insertCards(*toCreate.toTypedArray())
+                    updateCards(*toUpdate.toTypedArray())
+                }
+            }
         }
     }
 }
