@@ -5,7 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.addCallback
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,31 +27,36 @@ class EditorFragment : Fragment() {
     private val adapter = CardAdapter(showFlip = true, showDelete = true)
 
     // If null, we're creating a new stack. If not null, we're editing an existing stack
-    private var stackId: Int? = null
-
-    private val dirty get() =
-        viewModel.initStack.value?.title.orEmpty() != binding.title.text.toString() ||
-        adapter.isDirty()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        stackId = arguments?.let { args ->
+    private val stackId by lazy {
+        arguments?.let { args ->
             if (args.containsKey(NavArgs.STACK_ID.str)) {
                 args.getInt(NavArgs.STACK_ID.str)
             } else {
                 null
             }
         }
-        stackId?.let { stackId ->
-            viewModel.loadData(stackId)
-        }
-        activity?.onBackPressedDispatcher?.addCallback {
+    }
+
+    private val dirty get() =
+        viewModel.initStack.value?.title.orEmpty() != binding.title.text.toString() ||
+        adapter.isDirty()
+
+    private val onBackPressed = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
             if (dirty) {
                 showConfirmLeaveDialog()
             } else {
                 findNavController().popBackStack()
             }
         }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        stackId?.let { stackId ->
+            viewModel.loadData(stackId)
+        }
+        activity?.onBackPressedDispatcher?.addCallback(onBackPressed)
     }
 
     override fun onCreateView(
@@ -64,6 +69,8 @@ class EditorFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        onBackPressed.isEnabled = true
 
         binding.title.onFocusChangeListener = SystemHelper.hideKeypadListener
 
@@ -97,6 +104,7 @@ class EditorFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        onBackPressed.isEnabled = false
         _binding = null
     }
 

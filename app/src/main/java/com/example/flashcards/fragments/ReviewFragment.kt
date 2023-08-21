@@ -5,12 +5,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import com.example.flashcards.databinding.FragmentReviewBinding
-import com.example.flashcards.viewmodels.ReviewViewModel
+import com.example.flashcards.viewmodels.ProgressViewModel
 
 class ReviewFragment : Fragment() {
-    private val viewModel by viewModels<ReviewViewModel>()
+    private val viewModel by activityViewModels<ProgressViewModel>()
 
     private var _binding: FragmentReviewBinding? = null
     private val binding get() = _binding!!

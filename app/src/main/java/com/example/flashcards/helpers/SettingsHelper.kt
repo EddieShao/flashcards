@@ -20,7 +20,6 @@ object SettingsHelper {
                         setting to (prefs?.getString(setting.key, setting.default as String) ?: setting.default)
                     }
                     else -> {
-                        // TODO: log error parsing setting type
                         null
                     }
                 }
