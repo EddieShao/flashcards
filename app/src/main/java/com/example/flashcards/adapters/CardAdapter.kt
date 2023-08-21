@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import com.example.flashcards.R
+import com.example.flashcards.data.entities.Card
 import com.example.flashcards.databinding.CardBinding
 import com.example.flashcards.helpers.SystemHelper
 import com.example.flashcards.views.Dialog
@@ -21,7 +22,7 @@ data class DisplayCard(
     var front: String,
     var back: String,
     val isHappy: Boolean,
-    val id: Int? = null // null <=> this is a new card
+    val data: Card? = null // null <=> this is a new card
 )
 
 data class CardAdapterState(
@@ -181,7 +182,7 @@ class CardAdapter(
     private fun deleteCard(card: DisplayCard) {
         val pos = cards.indexOf(card)
         val deleted = cards.removeAt(pos)
-        deleted.id?.let { id -> deletedCards.add(deleted) }
+        deleted.data?.let { data -> deletedCards.add(deleted) }
         notifyItemRemoved(pos)
     }
 

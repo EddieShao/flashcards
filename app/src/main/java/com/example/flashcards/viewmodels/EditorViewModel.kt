@@ -11,7 +11,6 @@ import com.example.flashcards.data.entities.StackAndCards
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.Calendar
 
 class EditorViewModel : ViewModel() {
     val initData = MutableLiveData<StackAndCards>()
@@ -19,7 +18,7 @@ class EditorViewModel : ViewModel() {
 
     fun loadData(stackId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            val data = Database.instance.stackDao().loadStackAndCards(stackId)
+            val data = Database.instance.stackDao().loadStackAndCardsOLD(stackId)
             initData.postValue(data)
         }
     }
@@ -27,12 +26,12 @@ class EditorViewModel : ViewModel() {
     fun createData(title: String, adapterState: CardAdapterState) {
         assert(adapterState.deletedCards.isEmpty())
         viewModelScope.launch(Dispatchers.IO) {
-            val stackId = Database.instance.stackDao().insertStack(
-                Stack(title, Calendar.getInstance().timeInMillis)
-            )
+            val stackId = Database.instance.stackDao().insertStack(Stack(title))
             val toCreate = withContext(Dispatchers.Default) {
                 adapterState.cards.map { card ->
-                    // TODO: WARNING - cast to int might result in long overflow
+                    // WARNING: We cast long to int which could cause long overflow. However,
+                    //  realistically we won't ever reach that high of a number.
+                    // TODO: consider if should change id values from int to long
                     Card(card.front, card.back, stackId.toInt())
                 }
             }
@@ -42,14 +41,15 @@ class EditorViewModel : ViewModel() {
 
     fun updateData(stackId: Int, title: String, adapterState: CardAdapterState) {
         viewModelScope.launch(Dispatchers.Default) {
-            val toCreate = adapterState.cards.filter { card -> card.id == null }.map { card ->
+            val toCreate = adapterState.cards.filter { card -> card.data == null }.map { card ->
                 Card(card.front, card.back, stackId)
             }
             val toUpdate = adapterState.cards.mapNotNull { card ->
-                card.id?.let { id ->
-                    Card(card.front, card.back, stackId, id)
+                card.data?.let { data ->
+                    Card(card.front, card.back, stackId, data.createdOn, data.id)
                 }
             }
+            val toDelete = adapterState.deletedCards.mapNotNull { card -> card.data }
             withContext(Dispatchers.IO) {
                 if (title != initTitle) {
                     initData.value?.stack?.let { initStack ->
@@ -61,6 +61,7 @@ class EditorViewModel : ViewModel() {
                 with(Database.instance.cardDao()) {
                     insertCards(*toCreate.toTypedArray())
                     updateCards(*toUpdate.toTypedArray())
+                    deleteCards(*toDelete.toTypedArray())
                 }
             }
         }

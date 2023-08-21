@@ -104,7 +104,7 @@ class EditorFragment : Fragment() {
             binding.title.setText(data.stack.title)
             adapter.submitData(
                 data.cards.map { card ->
-                    DisplayCard(card.front, card.back, isHappy = false, card.id)
+                    DisplayCard(card.front, card.back, isHappy = false, card)
                 }
             )
         }
