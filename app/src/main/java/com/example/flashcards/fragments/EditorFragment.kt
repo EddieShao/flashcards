@@ -30,7 +30,8 @@ class EditorFragment : Fragment() {
     private var stackId: Int? = null
 
     private val dirty get() =
-        viewModel.initTitle != binding.title.text.toString() || adapter.isDirty()
+        viewModel.initStack.value?.title.orEmpty() != binding.title.text.toString() ||
+        adapter.isDirty()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -100,13 +101,13 @@ class EditorFragment : Fragment() {
     }
 
     private fun initObservers() {
-        viewModel.initData.observe(viewLifecycleOwner) { data ->
-            binding.title.setText(data.stack.title)
-            adapter.submitData(
-                data.cards.map { card ->
-                    DisplayCard(card.front, card.back, isHappy = false, card)
-                }
-            )
+        viewModel.initStack.observe(viewLifecycleOwner) { stack ->
+            binding.title.setText(stack.title)
+        }
+        viewModel.initCards.observe(viewLifecycleOwner) { cards ->
+            adapter.submitData(cards.map { card ->
+                DisplayCard(card.front, card.back, isHappy = false, card)
+            })
         }
     }
 

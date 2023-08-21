@@ -7,19 +7,20 @@ import com.example.flashcards.adapters.CardAdapterState
 import com.example.flashcards.data.Database
 import com.example.flashcards.data.entities.Card
 import com.example.flashcards.data.entities.Stack
-import com.example.flashcards.data.entities.StackAndCards
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class EditorViewModel : ViewModel() {
-    val initData = MutableLiveData<StackAndCards>()
-    val initTitle get() = initData.value?.stack?.title.orEmpty()
+    val initStack = MutableLiveData<Stack>()
+    val initCards = MutableLiveData<List<Card>>()
 
     fun loadData(stackId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            val data = Database.instance.stackDao().loadStackAndCardsOLD(stackId)
-            initData.postValue(data)
+            Database.instance.stackDao().loadStackAndCards(stackId).entries.firstOrNull()?.let { (stack, cards) ->
+                initStack.postValue(stack)
+                initCards.postValue(cards)
+            }
         }
     }
 
@@ -51,8 +52,8 @@ class EditorViewModel : ViewModel() {
             }
             val toDelete = adapterState.deletedCards.mapNotNull { card -> card.data }
             withContext(Dispatchers.IO) {
-                if (title != initTitle) {
-                    initData.value?.stack?.let { initStack ->
+                initStack.value?.let { initStack ->
+                    if (title != initStack.title) {
                         Database.instance.stackDao().updateStacks(
                             Stack(title, initStack.createdOn, initStack.id)
                         )
