@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.addCallback
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -43,6 +44,13 @@ class EditorFragment : Fragment() {
         stackId?.let { stackId ->
             viewModel.loadData(stackId)
         }
+        activity?.onBackPressedDispatcher?.addCallback {
+            if (dirty) {
+                showConfirmLeaveDialog()
+            } else {
+                findNavController().popBackStack()
+            }
+        }
     }
 
     override fun onCreateView(
@@ -65,11 +73,7 @@ class EditorFragment : Fragment() {
         }
 
         binding.back.setOnClickListener { button ->
-            if (dirty) {
-                showConfirmLeaveDialog()
-            } else {
-                findNavController().popBackStack()
-            }
+            activity?.onBackPressedDispatcher?.onBackPressed()
         }
 
         binding.newCard.setOnClickListener { button ->
