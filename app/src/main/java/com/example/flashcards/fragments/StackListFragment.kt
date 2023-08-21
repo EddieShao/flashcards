@@ -28,6 +28,36 @@ class StackListFragment : Fragment() {
     private var _binding: FragmentStackListBinding? = null
     private val binding get() = _binding!!
 
+    private val adapter = StackAdapter { stack -> showConfirmDeleteDialog(stack) }.apply {
+        addLoadStateListener { states ->
+            if (states.append.endOfPaginationReached) {
+                // use nullable binding because load state might change outside of lifecycle
+                _binding?.let { binding ->
+                    if (itemCount < 1) {
+                        binding.beginnerNote.text =
+                            if (binding.editText.text.isNullOrEmpty()) {
+                                "Create your first set"
+                            } else {
+                                "Nothing to see here..."
+                            }
+                        binding.beginnerNote.visibility = View.VISIBLE
+                    } else {
+                        binding.beginnerNote.visibility = View.INVISIBLE
+                    }
+                }
+            }
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        lifecycleScope.launch {
+            viewModel.data.collectLatest {
+                adapter.submitData(it)
+            }
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -63,37 +93,13 @@ class StackListFragment : Fragment() {
 
         binding.stackList.layoutManager = LinearLayoutManager(context)
         binding.stackList.addItemDecoration(SpaceDivider(sizeDp = 48, verticalPadding = true))
-        val adapter = StackAdapter { stack ->
-            showConfirmDeleteDialog(stack)
-        }
-        adapter.addLoadStateListener { states ->
-            if (states.append.endOfPaginationReached) {
-                // use nullable binding because load state might change outside of lifecycle
-                _binding?.let { binding ->
-                    if (adapter.itemCount < 1) {
-                        binding.beginnerNote.text =
-                            if (binding.editText.text.isNullOrEmpty()) {
-                                "Create your first set"
-                            } else {
-                                "Nothing to see here..."
-                            }
-                        binding.beginnerNote.visibility = View.VISIBLE
-                    } else {
-                        binding.beginnerNote.visibility = View.INVISIBLE
-                    }
-                }
-            }
-        }
         binding.stackList.adapter = adapter.withLoadStateFooter(StackLoadStateAdapter())
-        lifecycleScope.launch {
-            viewModel.data.collectLatest {
-                adapter.submitData(it)
-            }
-        }
 
         binding.fab.setOnClickListener { fab ->
             findNavController().navigate(R.id.action_stackListFragment_to_editorFragment)
         }
+
+        viewModel.checkSortOrder()
     }
 
     override fun onDestroyView() {

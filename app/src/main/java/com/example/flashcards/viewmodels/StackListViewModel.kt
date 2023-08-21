@@ -19,7 +19,9 @@ import kotlinx.coroutines.launch
 
 class StackListViewModel : ViewModel() {
     private var searchQueryJob: Job? = null
-    private var searchQuery: String = ""
+    private var searchQuery = ""
+
+    private var sortOrder = currentSortOrder()
 
     private var stackPagingSource: StackPagingSource? = null
     val data = Pager(
@@ -29,7 +31,7 @@ class StackListViewModel : ViewModel() {
             initialLoadSize = 20
         ),
     ) {
-        StackPagingSource(query = { searchQuery }, order = { sortOrder() }).also {
+        StackPagingSource(query = { searchQuery }, order = { sortOrder }).also {
             stackPagingSource = it
         }
     }.flow.cachedIn(viewModelScope)
@@ -53,18 +55,22 @@ class StackListViewModel : ViewModel() {
         }
         searchQueryJob = viewModelScope.launch(Dispatchers.Default) {
             delay(timeMillis = 500)
-            if (isActive) {
+            if (isActive && searchQuery != query) {
                 searchQuery = query
                 stackPagingSource?.invalidate()
             }
         }
     }
 
-    private fun sortOrder() = when (
-        SettingsHelper.currentOptionOf<StackSortOrderOption>(Setting.STACK_SORT_ORDER)
-    ) {
-        StackSortOrderOption.TITLE -> "title"
-        StackSortOrderOption.RECENTLY_ADDED -> "created_on"
-        else -> "created_on"
+    fun checkSortOrder() {
+        val curr = currentSortOrder()
+        if (sortOrder != curr) {
+            sortOrder = curr
+            stackPagingSource?.invalidate()
+        }
     }
+
+    private fun currentSortOrder() =
+        SettingsHelper.currentOptionOf(Setting.STACK_SORT_ORDER)
+            ?: StackSortOrderOption.RECENTLY_ADDED
 }

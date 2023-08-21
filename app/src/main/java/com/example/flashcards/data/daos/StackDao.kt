@@ -25,6 +25,9 @@ interface StackDao {
     @Query("SELECT * FROM stack WHERE id = :stackId")
     suspend fun loadStackAndCards(stackId: Int): StackAndCards
 
-    @Query("SELECT * FROM stack WHERE title LIKE '%' || :query || '%' ORDER BY :order ASC LIMIT :limit OFFSET :offset")
-    suspend fun pageStacks(query: String, order: String, limit: Int, offset: Int): List<Stack>
+    @Query("SELECT * FROM stack WHERE title LIKE '%' || :query || '%' ORDER BY title ASC LIMIT :limit OFFSET :offset")
+    suspend fun pageStacksByTitle(query: String, limit: Int, offset: Int): List<Stack>
+
+    @Query("SELECT * FROM stack WHERE title LIKE '%' || :query || '%' ORDER BY created_on DESC LIMIT :limit OFFSET :offset")
+    suspend fun pageStacksByCreatedOn(query: String, limit: Int, offset: Int): List<Stack>
 }
