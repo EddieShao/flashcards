@@ -21,8 +21,6 @@ class StackListViewModel : ViewModel() {
     private var searchQueryJob: Job? = null
     private var searchQuery = ""
 
-    private var sortOrder = currentSortOrder()
-
     private var stackPagingSource: StackPagingSource? = null
     val data = Pager(
         PagingConfig(
@@ -31,7 +29,7 @@ class StackListViewModel : ViewModel() {
             initialLoadSize = 20
         ),
     ) {
-        StackPagingSource(query = { searchQuery }, order = { sortOrder }).also {
+        StackPagingSource(query = { searchQuery }, order = { currentSortOrder() }).also {
             stackPagingSource = it
         }
     }.flow.cachedIn(viewModelScope)
@@ -62,12 +60,8 @@ class StackListViewModel : ViewModel() {
         }
     }
 
-    fun checkSortOrder() {
-        val curr = currentSortOrder()
-        if (sortOrder != curr) {
-            sortOrder = curr
-            stackPagingSource?.invalidate()
-        }
+    fun refreshStacks() {
+        stackPagingSource?.invalidate()
     }
 
     private fun currentSortOrder() =

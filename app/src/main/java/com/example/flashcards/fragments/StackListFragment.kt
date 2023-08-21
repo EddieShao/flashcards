@@ -28,6 +28,8 @@ class StackListFragment : Fragment() {
     private var _binding: FragmentStackListBinding? = null
     private val binding get() = _binding!!
 
+    // TODO: manually code an adapter that does paging, it'll let me do a lot more stuff.
+    //  it's good practice for me too :)
     private val adapter = StackAdapter { stack -> showConfirmDeleteDialog(stack) }.apply {
         addLoadStateListener { states ->
             if (states.append.endOfPaginationReached) {
@@ -99,7 +101,7 @@ class StackListFragment : Fragment() {
             findNavController().navigate(R.id.action_stackListFragment_to_editorFragment)
         }
 
-        viewModel.checkSortOrder()
+        viewModel.refreshStacks()
     }
 
     override fun onDestroyView() {
