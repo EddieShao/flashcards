@@ -29,7 +29,7 @@ class PracticeFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.init(stackId)
+        viewModel.start(stackId)
         activity?.onBackPressedDispatcher?.addCallback(onBackPressed)
     }
 
@@ -45,17 +45,33 @@ class PracticeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         onBackPressed.isEnabled = true
+
+        listOf(binding.card.front, binding.card.back).forEach { binding ->
+            binding.delete.visibility = View.GONE
+            binding.face.visibility = View.INVISIBLE
+            with(binding.editText) {
+                isEnabled = false
+                isClickable = false
+                isLongClickable = false
+            }
+            binding.flip.setOnClickListener {
+
+            }
+        }
+
+        viewModel.status.observe(viewLifecycleOwner) { status ->
+            // TODO
+        }
+
+        viewModel.finished.observe(viewLifecycleOwner) {
+            // TODO
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         onBackPressed.isEnabled = false
         _binding = null
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        viewModel.clear()
     }
 
     private fun showConfirmLeaveDialog() {

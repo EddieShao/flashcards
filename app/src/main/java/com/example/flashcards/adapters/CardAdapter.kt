@@ -1,14 +1,11 @@
 package com.example.flashcards.adapters
 
-import android.animation.AnimatorInflater
-import android.animation.AnimatorSet
 import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.animation.doOnEnd
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
@@ -17,6 +14,7 @@ import com.example.flashcards.data.entities.Card
 import com.example.flashcards.databinding.CardBinding
 import com.example.flashcards.helpers.SystemHelper
 import com.example.flashcards.views.Dialog
+import com.example.flashcards.views.flip
 
 data class DisplayCard(
     var front: String,
@@ -60,7 +58,7 @@ class CardAdapter(
                     setImageResource(R.drawable.flip_to_back_30)
                     contentDescription = "Flip to back side"
                     setOnClickListener { button ->
-                        flip(holder.binding.front.root, holder.binding.back.root)
+                        holder.binding.front.root.flip(holder.binding.back.root)
                     }
                 } else {
                     visibility = View.GONE
@@ -111,7 +109,7 @@ class CardAdapter(
                     setImageResource(R.drawable.flip_to_front_30)
                     contentDescription = "Flip to front side"
                     setOnClickListener { button ->
-                        flip(holder.binding.back.root, holder.binding.front.root)
+                        holder.binding.back.root.flip(holder.binding.front.root)
                     }
                 } else {
                     visibility = View.GONE
@@ -184,29 +182,6 @@ class CardAdapter(
         val deleted = cards.removeAt(pos)
         deleted.data?.let { data -> deletedCards.add(deleted) }
         notifyItemRemoved(pos)
-    }
-
-    private fun flip(from: View, to: View) {
-        to.visibility = View.VISIBLE
-
-        // zoom camera out so flip animation doesn't clip outside of margins
-        (8000 * from.context.resources.displayMetrics.density).let { cameraDistance ->
-            from.cameraDistance = cameraDistance
-            to.cameraDistance = cameraDistance
-        }
-
-        val flipToBack = AnimatorInflater.loadAnimator(from.context, R.animator.flip_to_back) as AnimatorSet
-        flipToBack.setTarget(from)
-
-        val flipToFront = AnimatorInflater.loadAnimator(to.context, R.animator.flip_to_front) as AnimatorSet
-        flipToFront.setTarget(to)
-
-        flipToFront.doOnEnd {
-            from.visibility = View.GONE
-        }
-
-        flipToBack.start()
-        flipToFront.start()
     }
 
     private fun showConfirmDeleteDialog(card: DisplayCard, context: Context) {
