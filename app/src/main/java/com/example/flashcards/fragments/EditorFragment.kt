@@ -28,6 +28,12 @@ class EditorFragment : Fragment() {
 
     private val adapter = CardAdapter(showFlip = true, showDelete = true)
 
+    private val warningSnackBar by lazy {
+        SnackBar(binding.root, SnackBar.LENGTH_SHORT).apply {
+            setText("You must add at least 1 card")
+        }
+    }
+
     // If null, we're creating a new stack. If not null, we're editing an existing stack
     private val stackId by lazy {
         arguments?.let { args ->
@@ -92,10 +98,7 @@ class EditorFragment : Fragment() {
 
         binding.save.setOnClickListener { button ->
             if (adapter.state.cards.isEmpty()) {
-                SnackBar(binding.root, SnackBar.LENGTH_SHORT).apply {
-                    setText("You must add at least 1 card")
-                    show()
-                }
+                warningSnackBar.show()
             } else {
                 if (dirty) {
                     stackId?.let { stackId ->
