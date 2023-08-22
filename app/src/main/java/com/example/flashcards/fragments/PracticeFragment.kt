@@ -5,10 +5,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.example.flashcards.databinding.FragmentPracticeBinding
 import com.example.flashcards.helpers.NavArgs
 import com.example.flashcards.viewmodels.ProgressViewModel
+import com.example.flashcards.views.Dialog
 
 class PracticeFragment : Fragment() {
     private val viewModel by activityViewModels<ProgressViewModel>()
@@ -18,9 +21,16 @@ class PracticeFragment : Fragment() {
 
     private val stackId by lazy { requireArguments().getInt(NavArgs.STACK_ID.str) }
 
+    private val onBackPressed = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            showConfirmLeaveDialog()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.loadData(stackId)
+        viewModel.init(stackId)
+        activity?.onBackPressedDispatcher?.addCallback(onBackPressed)
     }
 
     override fun onCreateView(
@@ -31,13 +41,35 @@ class PracticeFragment : Fragment() {
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        onBackPressed.isEnabled = true
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
+        onBackPressed.isEnabled = false
         _binding = null
     }
 
     override fun onDestroy() {
         super.onDestroy()
         viewModel.clear()
+    }
+
+    private fun showConfirmLeaveDialog() {
+        Dialog(context).run {
+            setTitle("Leave Practice")
+            setMessage("Are you sure you want to leave? Your progress will be lost.")
+            setPositiveButton("Leave") { dialog, which ->
+                findNavController().popBackStack()
+                dialog.dismiss()
+            }
+            setNegativeButton("Cancel") { dialog, which ->
+                dialog.cancel()
+            }
+            show()
+        }
     }
 }

@@ -18,6 +18,7 @@ import com.example.flashcards.helpers.SystemHelper
 import com.example.flashcards.views.Dialog
 import com.example.flashcards.views.SpaceDivider
 
+// TODO: add requirement to add at least 1 card before able to save
 class EditorFragment : Fragment() {
     private val viewModel by viewModels<EditorViewModel>()
 

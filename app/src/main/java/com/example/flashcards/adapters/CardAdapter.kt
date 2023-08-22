@@ -21,7 +21,7 @@ import com.example.flashcards.views.Dialog
 data class DisplayCard(
     var front: String,
     var back: String,
-    val isHappy: Boolean,
+    var isHappy: Boolean,
     val data: Card? = null // null <=> this is a new card
 )
 
