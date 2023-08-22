@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="6dp"
+    android:background="@drawable/snack_bar"
+    android:backgroundTint="@color/primary">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_gravity="center_vertical"
+        android:paddingVertical="14dp"
+        android:paddingHorizontal="12dp"
+        android:maxLines="1"
+        android:textColor="@color/background"
+        android:backgroundTint="@color/primary"
+        tools:text="This is a snackbar"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/action"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:paddingVertical="14dp"
+        android:paddingHorizontal="12dp"
+        android:background="@color/primary"
+        android:textColor="@color/background_tinted"
+        android:visibility="gone"
+        tools:visibility="visible"
+        tools:text="Action"/>
+
+</LinearLayout>

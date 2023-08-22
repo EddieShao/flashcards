@@ -16,6 +16,7 @@ import com.example.flashcards.databinding.FragmentEditorBinding
 import com.example.flashcards.helpers.NavArgs
 import com.example.flashcards.helpers.SystemHelper
 import com.example.flashcards.views.Dialog
+import com.example.flashcards.views.SnackBar
 import com.example.flashcards.views.SpaceDivider
 
 // TODO: add requirement to add at least 1 card before able to save
@@ -90,14 +91,21 @@ class EditorFragment : Fragment() {
         }
 
         binding.save.setOnClickListener { button ->
-            if (dirty) {
-                stackId?.let { stackId ->
-                    viewModel.updateData(stackId, binding.title.text.toString(), adapter.state)
-                } ?: run {
-                    viewModel.createData(binding.title.text.toString(), adapter.state)
+            if (adapter.state.cards.isEmpty()) {
+                SnackBar(binding.root, SnackBar.LENGTH_SHORT).apply {
+                    setText("You must add at least 1 card")
+                    show()
                 }
+            } else {
+                if (dirty) {
+                    stackId?.let { stackId ->
+                        viewModel.updateData(stackId, binding.title.text.toString(), adapter.state)
+                    } ?: run {
+                        viewModel.createData(binding.title.text.toString(), adapter.state)
+                    }
+                }
+                findNavController().popBackStack()
             }
-            findNavController().popBackStack()
         }
 
         initObservers()

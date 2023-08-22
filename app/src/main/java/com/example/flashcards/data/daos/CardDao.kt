@@ -18,6 +18,6 @@ interface CardDao {
     @Delete
     suspend fun deleteCards(vararg cards: Card)
 
-    @Query("SELECT * FROM card WHERE stack_id = :stackId ORDER BY RAND()")
+    @Query("SELECT * FROM card WHERE stack_id = :stackId ORDER BY RANDOM()")
     suspend fun loadCardsWithStackId(stackId: Int): List<Card>
 }
