@@ -9,20 +9,12 @@ import com.example.flashcards.views.FlashCard
 
 data class ProgressCard(
     val data: Card,
-    var isHappy: Boolean
+    val isHappy: Boolean
 )
 
 private object DiffCallback : DiffUtil.ItemCallback<ProgressCard>() {
     override fun areItemsTheSame(oldItem: ProgressCard, newItem: ProgressCard): Boolean {
-        return when {
-            oldItem.data.id == null && newItem.data.id == null -> {
-                oldItem.data.hashCode() == newItem.data.hashCode()
-            }
-            oldItem.data.id != null && newItem.data.id != null -> {
-                oldItem.data.id == newItem.data.id
-            }
-            else -> false
-        }
+        return oldItem.data.id == newItem.data.id
     }
 
     override fun areContentsTheSame(oldItem: ProgressCard, newItem: ProgressCard): Boolean {

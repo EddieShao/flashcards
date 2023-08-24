@@ -19,6 +19,8 @@ class EditorViewModel(private val stackId: Int?) : ViewModel() {
     private val cards = mutableListOf<Card>()
     private val cardsToDelete = mutableListOf<Card>()
 
+    private var tempId = -1 // use as temporary card id; decrement this whenever a new card is created
+
     val dirty: Boolean get() {
         val initCards = initCards.value.orEmpty()
         val initTitle = initStack.value?.title.orEmpty()
@@ -55,20 +57,23 @@ class EditorViewModel(private val stackId: Int?) : ViewModel() {
         title = newTitle
     }
 
-    fun createCard() = Card("", "").also { card -> cards.add(card) }
+    fun createCard() = Card("", "", id = tempId).also { card ->
+        cards.add(card)
+        tempId--
+    }
 
     fun deleteCard(card: Card) {
-        if (card.id != null) {
+        if (card.id >= 0) {
             cardsToDelete.add(card)
         }
         cards.remove(card)
     }
 
     fun updateCard(side: FlashCard.Side, newText: String, card: Card) {
-        assert(cards.contains(card))
-        when (side) {
-            FlashCard.Side.FRONT -> card.front = newText
-            FlashCard.Side.BACK -> card.back = newText
+        val index = cards.indexOf(card)
+        cards[index] = when (side) {
+            FlashCard.Side.FRONT -> card.copy(front = newText)
+            FlashCard.Side.BACK -> card.copy(back = newText)
         }
     }
 

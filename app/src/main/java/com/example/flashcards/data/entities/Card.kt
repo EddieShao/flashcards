@@ -17,16 +17,16 @@ import java.util.Calendar
     ]
 )
 data class Card(
-    var front: String,
+    val front: String,
 
-    var back: String,
+    val back: String,
 
     @ColumnInfo(name = "stack_id")
-    var stackId: Int? = null,
+    val stackId: Int = 0,
 
     @ColumnInfo(name = "created_on")
     val createdOn: Long = Calendar.getInstance().timeInMillis,
 
     @PrimaryKey(autoGenerate = true)
-    val id: Int? = null
+    val id: Int = 0
 )
