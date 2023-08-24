@@ -29,7 +29,6 @@ class PracticeFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.start(stackId)
         activity?.onBackPressedDispatcher?.addCallback(onBackPressed)
     }
 
@@ -57,14 +56,6 @@ class PracticeFragment : Fragment() {
             binding.flip.setOnClickListener {
 
             }
-        }
-
-        viewModel.status.observe(viewLifecycleOwner) { status ->
-            // TODO
-        }
-
-        viewModel.finished.observe(viewLifecycleOwner) {
-            // TODO
         }
     }
 

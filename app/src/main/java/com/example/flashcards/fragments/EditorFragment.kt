@@ -10,7 +10,6 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.flashcards.adapters.CardAdapter
-import com.example.flashcards.adapters.DisplayCard
 import com.example.flashcards.viewmodels.EditorViewModel
 import com.example.flashcards.databinding.FragmentEditorBinding
 import com.example.flashcards.helpers.NavArgs
@@ -19,9 +18,8 @@ import com.example.flashcards.views.Dialog
 import com.example.flashcards.views.SnackBar
 import com.example.flashcards.views.SpaceDivider
 
-// TODO: add requirement to add at least 1 card before able to save
 class EditorFragment : Fragment() {
-    private val viewModel by viewModels<EditorViewModel>()
+    private val viewModel by viewModels<EditorViewModel> { EditorViewModel.Factory(stackId) }
 
     private var _binding: FragmentEditorBinding? = null
     private val binding get() = _binding!!
@@ -45,9 +43,8 @@ class EditorFragment : Fragment() {
         }
     }
 
-    private val dirty get() =
-        viewModel.initStack.value?.title.orEmpty() != binding.title.text.toString() ||
-        adapter.isDirty()
+    // TODO: implement ability to check if state is dirty
+    private val dirty = true
 
     private val onBackPressed = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
@@ -61,9 +58,6 @@ class EditorFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        stackId?.let { stackId ->
-            viewModel.loadData(stackId)
-        }
         activity?.onBackPressedDispatcher?.addCallback(onBackPressed)
     }
 
@@ -93,42 +87,29 @@ class EditorFragment : Fragment() {
         }
 
         binding.newCard.setOnClickListener { button ->
-            adapter.insertCard(position = 0, DisplayCard("", "", false))
+            // TODO: add new card
         }
 
         binding.save.setOnClickListener { button ->
-            if (adapter.state.cards.isEmpty()) {
-                warningSnackBar.show()
-            } else {
-                if (dirty) {
-                    stackId?.let { stackId ->
-                        viewModel.updateData(stackId, binding.title.text.toString(), adapter.state)
-                    } ?: run {
-                        viewModel.createData(binding.title.text.toString(), adapter.state)
-                    }
-                }
-                findNavController().popBackStack()
+            if (dirty) {
+                // TODO: save data
             }
+            findNavController().popBackStack()
         }
 
-        initObservers()
+        viewModel.stack.observe(viewLifecycleOwner) { stack ->
+            // TODO: populate title
+        }
+
+        viewModel.cards.observe(viewLifecycleOwner) { cards ->
+            // TODO: populate card list
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         onBackPressed.isEnabled = false
         _binding = null
-    }
-
-    private fun initObservers() {
-        viewModel.initStack.observe(viewLifecycleOwner) { stack ->
-            binding.title.setText(stack.title)
-        }
-        viewModel.initCards.observe(viewLifecycleOwner) { cards ->
-            adapter.submitData(cards.map { card ->
-                DisplayCard(card.front, card.back, isHappy = false, card)
-            })
-        }
     }
 
     private fun showConfirmLeaveDialog() {

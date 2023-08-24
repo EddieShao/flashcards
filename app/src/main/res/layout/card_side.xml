@@ -82,15 +82,23 @@
 
     </FrameLayout>
 
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/face"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:padding="8dp"
-        android:minHeight="46dp"
+        android:layoutDirection="rtl"
         android:backgroundTint="@android:color/transparent"
-        tools:src="@drawable/happy_30"
-        tools:tint="@color/green"/>
+        android:minHeight="46dp">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/face"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:backgroundTint="@android:color/transparent"
+            tools:src="@drawable/happy_30"
+            tools:tint="@color/green"/>
+
+    </LinearLayout>
 
 </LinearLayout>
