@@ -16,7 +16,7 @@ private object DiffCallback : DiffUtil.ItemCallback<ProgressCard>() {
     override fun areItemsTheSame(oldItem: ProgressCard, newItem: ProgressCard): Boolean {
         return when {
             oldItem.data.id == null && newItem.data.id == null -> {
-                oldItem === newItem
+                oldItem.data.hashCode() == newItem.data.hashCode()
             }
             oldItem.data.id != null && newItem.data.id != null -> {
                 oldItem.data.id == newItem.data.id
@@ -33,7 +33,9 @@ private object DiffCallback : DiffUtil.ItemCallback<ProgressCard>() {
 class CardAdapter(
     private val showFlip: Boolean = false,
     private val showDelete: Boolean = false,
-    private val showFace: Boolean = false
+    private val showFace: Boolean = false,
+    private val onDelete: ((card: ProgressCard) -> Unit)? = null,
+    private val onTextChanged: ((side: FlashCard.Side, newText: String, card: ProgressCard) -> Unit)? = null
 ) : ListAdapter<ProgressCard, CardAdapter.ViewHolder>(DiffCallback) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(
         FlashCard(parent.context).also { card ->
@@ -47,6 +49,14 @@ class CardAdapter(
         holder.bind(getItem(position))
     }
 
+    fun addCard(card: ProgressCard, index: Int) {
+        submitList(currentList.toMutableList().apply { add(index, card) })
+    }
+
+    fun removeCard(card: ProgressCard) {
+        submitList(currentList.toMutableList().apply { remove(card) })
+    }
+
     inner class ViewHolder(val view: FlashCard) : RecyclerView.ViewHolder(view) {
         fun bind(card: ProgressCard) {
             with(view) {
@@ -54,17 +64,10 @@ class CardAdapter(
                 back = card.data.back
                 isHappy = card.isHappy
                 onDelete = { view ->
-                    // TODO
+                    this@CardAdapter.onDelete?.invoke(card)
                 }
                 onTextChanged = { side, text ->
-                    when (side) {
-                        FlashCard.Side.FRONT -> {
-                            // TODO
-                        }
-                        FlashCard.Side.BACK -> {
-                            // TODO
-                        }
-                    }
+                    this@CardAdapter.onTextChanged?.invoke(side, text, card)
                 }
             }
         }

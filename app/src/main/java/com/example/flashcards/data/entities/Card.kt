@@ -22,7 +22,7 @@ data class Card(
     var back: String,
 
     @ColumnInfo(name = "stack_id")
-    val stackId: Int,
+    var stackId: Int? = null,
 
     @ColumnInfo(name = "created_on")
     val createdOn: Long = Calendar.getInstance().timeInMillis,
