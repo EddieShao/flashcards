@@ -45,17 +45,8 @@ class PracticeFragment : Fragment() {
 
         onBackPressed.isEnabled = true
 
-        listOf(binding.card.front, binding.card.back).forEach { binding ->
-            binding.delete.visibility = View.GONE
-            binding.face.visibility = View.INVISIBLE
-            with(binding.editText) {
-                isEnabled = false
-                isClickable = false
-                isLongClickable = false
-            }
-            binding.flip.setOnClickListener {
-
-            }
+        binding.back.setOnClickListener {
+            activity?.onBackPressedDispatcher?.onBackPressed()
         }
     }
 

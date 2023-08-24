@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.PracticeFragment">
 
     <androidx.appcompat.widget.AppCompatImageButton
@@ -62,12 +63,15 @@
 
         </LinearLayout>
 
-        <include
+        <com.example.flashcards.views.FlashCard
             android:id="@+id/card"
-            layout="@layout/card"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            custom:show_flip="true"
+            custom:show_delete="false"
+            custom:show_face="false"
+            custom:editable="false"/>
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/progress"

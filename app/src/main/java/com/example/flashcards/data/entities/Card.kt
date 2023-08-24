@@ -17,9 +17,9 @@ import java.util.Calendar
     ]
 )
 data class Card(
-    val front: String,
+    var front: String,
 
-    val back: String,
+    var back: String,
 
     @ColumnInfo(name = "stack_id")
     val stackId: Int,
@@ -28,5 +28,5 @@ data class Card(
     val createdOn: Long = Calendar.getInstance().timeInMillis,
 
     @PrimaryKey(autoGenerate = true)
-    val id: Int = 0
+    val id: Int? = null
 )

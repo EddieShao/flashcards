@@ -71,12 +71,22 @@ class FlashCard @JvmOverloads constructor(
     var isHappy = false
         set(value) {
             field = value
-            listOf(binding.front, binding.back).forEach { side ->
+            for (side in listOf(binding.front, binding.back)) {
                 side.face.setImageResource(if (value) R.drawable.happy_30 else R.drawable.sad_30)
                 side.face.setColorFilter(
                     ContextCompat.getColor(context, if (value) R.color.green else R.color.red),
                     android.graphics.PorterDuff.Mode.SRC_IN
                 )
+            }
+        }
+
+    var editable = true
+        set(value) {
+            field = value
+            for (side in listOf(binding.front, binding.back)) {
+                side.editText.isEnabled = value
+                side.editText.isClickable = value
+                side.editText.isLongClickable = value
             }
         }
 
@@ -87,8 +97,9 @@ class FlashCard @JvmOverloads constructor(
         showFlip = styledAttrs.getBoolean(R.styleable.FlashCardView_show_flip, false)
         showDelete = styledAttrs.getBoolean(R.styleable.FlashCardView_show_delete, false)
         showFace = styledAttrs.getBoolean(R.styleable.FlashCardView_show_face, false)
+        editable = styledAttrs.getBoolean(R.styleable.FlashCardView_editable, true)
 
-        listOf(Side.FRONT, Side.BACK).forEach { side ->
+        for (side in listOf(Side.FRONT, Side.BACK)) {
             fun <T> bySide(front: T, back: T) = when (side) {
                 Side.FRONT -> front
                 Side.BACK -> back

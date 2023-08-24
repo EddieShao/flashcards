@@ -4,5 +4,6 @@
         <attr name="show_flip" format="boolean"/>
         <attr name="show_delete" format="boolean"/>
         <attr name="show_face" format="boolean"/>
+        <attr name="editable" format="boolean"/>
     </declare-styleable>
 </resources>

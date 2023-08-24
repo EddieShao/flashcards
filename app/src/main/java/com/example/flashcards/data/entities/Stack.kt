@@ -7,7 +7,7 @@ import java.util.Calendar
 
 @Entity
 data class Stack(
-    val title: String,
+    var title: String,
 
     @ColumnInfo(name = "created_on")
     val createdOn: Long = Calendar.getInstance().timeInMillis,
