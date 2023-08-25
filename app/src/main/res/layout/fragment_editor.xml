@@ -75,6 +75,7 @@
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:animateLayoutChanges="true"
                 custom:show_flip="true"
                 custom:show_delete="true"
                 custom:show_face="false"

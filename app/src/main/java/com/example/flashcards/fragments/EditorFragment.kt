@@ -91,8 +91,8 @@ class EditorFragment : Fragment() {
             }
         }
 
-        viewModel.initTitle.observe(viewLifecycleOwner) { title ->
-            binding.title.setText(title)
+        viewModel.initStack.observe(viewLifecycleOwner) { stack ->
+            binding.title.setText(stack.title)
         }
 
         viewModel.initCards.observe(viewLifecycleOwner) { cards ->

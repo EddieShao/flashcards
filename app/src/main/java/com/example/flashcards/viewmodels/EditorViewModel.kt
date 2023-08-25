@@ -5,12 +5,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.flashcards.data.Database
+import com.example.flashcards.data.entities.Card
+import com.example.flashcards.data.entities.Stack
 import com.example.flashcards.models.CardModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class EditorViewModel(private val stackId: Int?) : ViewModel() {
-    val initTitle = MutableLiveData<String>()
+    val initStack = MutableLiveData<Stack>()
     val initCards = MutableLiveData<List<CardModel>>()
 
     init {
@@ -20,18 +22,15 @@ class EditorViewModel(private val stackId: Int?) : ViewModel() {
                 val cardModels = cards.map { card ->
                     CardModel(card.front, card.back, isHappy = false, card.createdOn, card.id)
                 }
-                initTitle.postValue(stack.title)
+                initStack.postValue(stack)
                 initCards.postValue(cardModels)
             }
-        } ?: run {
-            initTitle.postValue("")
-            initCards.postValue(mutableListOf())
         }
     }
 
     fun isDirty(title: String, cards: List<CardModel>): Boolean {
         val initCards = initCards.value.orEmpty()
-        val initTitle = initTitle.value.orEmpty()
+        val initTitle = initStack.value?.title.orEmpty()
 
         if (title != initTitle || cards.size != initCards.size) {
             return true
@@ -50,8 +49,26 @@ class EditorViewModel(private val stackId: Int?) : ViewModel() {
     fun createCard() = CardModel(front = "", back = "", isHappy = false)
 
     fun save(title: String, cards: List<CardModel>) {
-        // TODO
+        if (!isDirty(title, cards)) return
+
+        val stackDao = Database.instance.stackDao()
+        val cardDao = Database.instance.cardDao()
+        viewModelScope.launch(Dispatchers.IO) {
+            val stackId = stackId?.also {
+                stackDao.updateStacks(Stack(title, initStack.value!!.createdOn, it))
+            } ?: stackDao.insertStack(Stack(title)).toInt()
+
+            // toSet() call is safe because createdOn field is (realistically) unique
+            val toDelete = initCards.value.orEmpty().minus(cards.toSet())
+            val (toCreate, toUpdate) = cards.partition { card -> card.id == null }
+
+            cardDao.deleteCards(*toDelete.map { it.toCard(stackId) }.toTypedArray())
+            cardDao.insertCards(*toCreate.map { it.toCard(stackId) }.toTypedArray())
+            cardDao.updateCards(*toUpdate.map { it.toCard(stackId) }.toTypedArray())
+        }
     }
+
+    private fun CardModel.toCard(stackId: Int) = Card(front, back, stackId, createdOn, id ?: 0)
 
     @Suppress("UNCHECKED_CAST")
     class Factory(private val stackId: Int?) : ViewModelProvider.Factory {
