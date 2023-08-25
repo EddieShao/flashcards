@@ -5,25 +5,22 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.flashcards.data.Database
-import com.example.flashcards.data.entities.Card
-import com.example.flashcards.data.entities.Stack
+import com.example.flashcards.models.CardModel
 import com.example.flashcards.views.FlashCard
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class EditorViewModel(private val stackId: Int?) : ViewModel() {
-    val initStack = MutableLiveData<Stack>()
-    val initCards = MutableLiveData<List<Card>>()
+    val initTitle = MutableLiveData<String>()
+    val initCards = MutableLiveData<List<CardModel>>()
 
     private var title = ""
-    private val cards = mutableListOf<Card>()
-    private val cardsToDelete = mutableListOf<Card>()
-
-    private var tempId = -1 // use as temporary card id; decrement this whenever a new card is created
+    private val cards = mutableListOf<CardModel>()
+    private val cardsToDelete = mutableListOf<CardModel>()
 
     val dirty: Boolean get() {
         val initCards = initCards.value.orEmpty()
-        val initTitle = initStack.value?.title.orEmpty()
+        val initTitle = initTitle.value.orEmpty()
         if (
             title != initTitle ||
             cards.size != initCards.size ||
@@ -40,15 +37,17 @@ class EditorViewModel(private val stackId: Int?) : ViewModel() {
     init {
         stackId?.let { stackId ->
             viewModelScope.launch(Dispatchers.IO) {
-                val (stack, cards) = Database.instance.stackDao().loadStackAndCards(stackId).entries.first()
-                title = stack.title
-                this@EditorViewModel.cards.clear()
-                this@EditorViewModel.cards.addAll(cards)
-                initStack.postValue(stack)
-                initCards.postValue(cards.toMutableList())
+                val (k, v) = Database.instance.stackDao().loadStackAndCards(stackId).entries.first()
+                title = k.title
+                initTitle.postValue(k.title)
+                v.map { CardModel(it.front, it.back, isHappy = false, it.createdOn, it.id) }.let {
+                    cards.clear()
+                    cards.addAll(it)
+                    initCards.postValue(it)
+                }
             }
         } ?: run {
-            initStack.postValue(Stack(""))
+            initTitle.postValue("")
             initCards.postValue(mutableListOf())
         }
     }
@@ -57,23 +56,22 @@ class EditorViewModel(private val stackId: Int?) : ViewModel() {
         title = newTitle
     }
 
-    fun createCard() = Card("", "", id = tempId).also { card ->
+    fun createCard() = CardModel(front = "", back = "", isHappy = false).also { card ->
         cards.add(card)
-        tempId--
     }
 
-    fun deleteCard(card: Card) {
-        if (card.id >= 0) {
+    fun deleteCard(card: CardModel) {
+        if (card.id != null) {
             cardsToDelete.add(card)
         }
         cards.remove(card)
     }
 
-    fun updateCard(side: FlashCard.Side, newText: String, card: Card) {
-        val index = cards.indexOf(card)
-        cards[index] = when (side) {
-            FlashCard.Side.FRONT -> card.copy(front = newText)
-            FlashCard.Side.BACK -> card.copy(back = newText)
+    fun updateCard(side: FlashCard.Side, newText: String, card: CardModel) {
+        assert(cards.contains(card))
+        when (side) {
+            FlashCard.Side.FRONT -> card.front = newText
+            FlashCard.Side.BACK -> card.back = newText
         }
     }
 

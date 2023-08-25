@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:focusableInTouchMode="true"
     android:clickable="true"
     android:focusable="true"
@@ -67,12 +68,16 @@
                 android:tint="@color/secondary"
                 android:background="@drawable/card_dotted_ripple"/>
 
-            <androidx.recyclerview.widget.RecyclerView
+            <com.example.flashcards.views.CardListView
                 android:id="@+id/card_list"
+                android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"
-                tools:listitem="@layout/card_side"/>
+                custom:show_flip="true"
+                custom:show_delete="true"
+                custom:show_face="false"
+                custom:editable="true"
+                custom:divider_size_dp="24"/>
 
         </LinearLayout>
 

@@ -1,9 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <attr name="show_flip" format="boolean"/>
+    <attr name="show_delete" format="boolean"/>
+    <attr name="show_face" format="boolean"/>
+    <attr name="editable" format="boolean"/>
     <declare-styleable name="FlashCardView">
-        <attr name="show_flip" format="boolean"/>
-        <attr name="show_delete" format="boolean"/>
-        <attr name="show_face" format="boolean"/>
-        <attr name="editable" format="boolean"/>
+        <attr name="show_flip"/>
+        <attr name="show_delete"/>
+        <attr name="show_face"/>
+        <attr name="editable"/>
+    </declare-styleable>
+    <declare-styleable name="CardListView">
+        <attr name="show_flip"/>
+        <attr name="show_delete"/>
+        <attr name="show_face"/>
+        <attr name="editable"/>
+        <attr name="divider_size_dp" format="integer"/>
     </declare-styleable>
 </resources>
