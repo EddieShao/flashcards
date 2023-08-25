@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.flashcards.data.Database
 import com.example.flashcards.models.CardModel
-import com.example.flashcards.views.FlashCard
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -14,37 +13,15 @@ class EditorViewModel(private val stackId: Int?) : ViewModel() {
     val initTitle = MutableLiveData<String>()
     val initCards = MutableLiveData<List<CardModel>>()
 
-    private var title = ""
-    private val cards = mutableListOf<CardModel>()
-    private val cardsToDelete = mutableListOf<CardModel>()
-
-    val dirty: Boolean get() {
-        val initCards = initCards.value.orEmpty()
-        val initTitle = initTitle.value.orEmpty()
-        if (
-            title != initTitle ||
-            cards.size != initCards.size ||
-            cardsToDelete.isNotEmpty()
-        ) { return true }
-        for (i in 0 until cards.size) {
-            if (cards[i] != initCards[i]) {
-                return true
-            }
-        }
-        return false
-    }
-
     init {
         stackId?.let { stackId ->
             viewModelScope.launch(Dispatchers.IO) {
-                val (k, v) = Database.instance.stackDao().loadStackAndCards(stackId).entries.first()
-                title = k.title
-                initTitle.postValue(k.title)
-                v.map { CardModel(it.front, it.back, isHappy = false, it.createdOn, it.id) }.let {
-                    cards.clear()
-                    cards.addAll(it)
-                    initCards.postValue(it)
+                val (stack, cards) = Database.instance.stackDao().loadStackAndCards(stackId).entries.first()
+                val cardModels = cards.map { card ->
+                    CardModel(card.front, card.back, isHappy = false, card.createdOn, card.id)
                 }
+                initTitle.postValue(stack.title)
+                initCards.postValue(cardModels)
             }
         } ?: run {
             initTitle.postValue("")
@@ -52,30 +29,27 @@ class EditorViewModel(private val stackId: Int?) : ViewModel() {
         }
     }
 
-    fun updateTitle(newTitle: String) {
-        title = newTitle
-    }
+    fun isDirty(title: String, cards: List<CardModel>): Boolean {
+        val initCards = initCards.value.orEmpty()
+        val initTitle = initTitle.value.orEmpty()
 
-    fun createCard() = CardModel(front = "", back = "", isHappy = false).also { card ->
-        cards.add(card)
-    }
-
-    fun deleteCard(card: CardModel) {
-        if (card.id != null) {
-            cardsToDelete.add(card)
+        if (title != initTitle || cards.size != initCards.size) {
+            return true
         }
-        cards.remove(card)
-    }
 
-    fun updateCard(side: FlashCard.Side, newText: String, card: CardModel) {
-        assert(cards.contains(card))
-        when (side) {
-            FlashCard.Side.FRONT -> card.front = newText
-            FlashCard.Side.BACK -> card.back = newText
+        val sortedInitCards = initCards.sortedBy { it.hashCode() }
+        val sortedCards = cards.sortedBy { it.hashCode() }
+        for (i in sortedCards.indices) {
+            if (sortedCards[i] != sortedInitCards[i]) {
+                return true
+            }
         }
+        return false
     }
 
-    fun save() {
+    fun createCard() = CardModel(front = "", back = "", isHappy = false)
+
+    fun save(title: String, cards: List<CardModel>) {
         // TODO
     }
 

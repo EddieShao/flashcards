@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
-import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.flashcards.viewmodels.EditorViewModel
@@ -42,7 +41,7 @@ class EditorFragment : Fragment() {
 
     private val onBackPressed = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
-            if (viewModel.dirty) {
+            if (viewModel.isDirty(binding.title.text.toString(), binding.cardList.cards)) {
                 showConfirmLeaveDialog()
             } else {
                 findNavController().popBackStack()
@@ -68,20 +67,10 @@ class EditorFragment : Fragment() {
 
         onBackPressed.isEnabled = true
 
-        with(binding.title) {
-            onFocusChangeListener = SystemHelper.hideKeypadListener
-            doOnTextChanged { text, start, before, count ->
-                viewModel.updateTitle(text.toString())
-            }
-        }
+        binding.title.onFocusChangeListener = SystemHelper.hideKeypadListener
 
-        with(binding.cardList) {
-            onDelete = { card, position ->
-                showConfirmDeleteDialog(card, position)
-            }
-            onTextChanged = { side, newText, card ->
-                viewModel.updateCard(side, newText, card)
-            }
+        binding.cardList.onDelete = { card, position ->
+            showConfirmDeleteDialog(card, position)
         }
 
         binding.back.setOnClickListener { button ->
@@ -95,8 +84,9 @@ class EditorFragment : Fragment() {
         binding.save.setOnClickListener { button ->
             if (binding.cardList.cards.isEmpty()) {
                 warningSnackBar.show()
+                SystemHelper.hideKeypad(view.windowToken)
             } else {
-                viewModel.save()
+                viewModel.save(binding.title.text.toString(), binding.cardList.cards)
                 findNavController().popBackStack()
             }
         }
@@ -136,7 +126,6 @@ class EditorFragment : Fragment() {
             setTitle("Delete Card")
             setMessage("Are you sure you want to delete this card?")
             setPositiveButton("Delete") { dialog, which ->
-                viewModel.deleteCard(card)
                 binding.cardList.remove(position)
                 dialog.dismiss()
             }

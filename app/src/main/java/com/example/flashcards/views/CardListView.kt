@@ -24,7 +24,6 @@ class CardListView @JvmOverloads constructor(
     private val dividerSizeDp: Int
 
     var onDelete: ((card: CardModel, position: Int) -> Unit)? = null
-    var onTextChanged: ((side: FlashCard.Side, text: String, card: CardModel) -> Unit)? = null
 
     init {
         val styledAttrs =
@@ -98,7 +97,10 @@ class CardListView @JvmOverloads constructor(
                     this@CardListView.onDelete?.invoke(card, _cards.indexOf(card))
                 }
                 onTextChanged = { side, text ->
-                    this@CardListView.onTextChanged?.invoke(side, text, card)
+                    when (side) {
+                        FlashCard.Side.FRONT -> card.front = text
+                        FlashCard.Side.BACK -> card.back = text
+                    }
                 }
             }
         }

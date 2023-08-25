@@ -45,10 +45,11 @@
         android:hint="Name"
         app:layout_constraintTop_toBottomOf="@+id/save"/>
 
-    <androidx.core.widget.NestedScrollView
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_margin="24dp"
+        android:scrollbars="none"
         app:layout_constraintTop_toBottomOf="@id/title"
         app:layout_constraintBottom_toBottomOf="parent">
 
@@ -64,6 +65,7 @@
                 android:id="@+id/new_card"
                 android:layout_width="match_parent"
                 android:layout_height="218dp"
+                android:layout_marginBottom="24dp"
                 android:src="@drawable/add_50"
                 android:tint="@color/secondary"
                 android:background="@drawable/card_dotted_ripple"/>
@@ -81,6 +83,6 @@
 
         </LinearLayout>
 
-    </androidx.core.widget.NestedScrollView>
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
