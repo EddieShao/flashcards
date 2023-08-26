@@ -96,7 +96,7 @@
                 android:paddingVertical="16dp"
                 android:paddingHorizontal="56dp"
                 android:src="@drawable/sad_30"
-                android:tint="@color/background"
+                android:tint="@color/white"
                 android:background="@drawable/button"
                 android:backgroundTint="@color/red"
                 android:contentDescription="previous card"/>
@@ -114,7 +114,7 @@
                 android:paddingVertical="16dp"
                 android:paddingHorizontal="56dp"
                 android:src="@drawable/happy_30"
-                android:tint="@color/background"
+                android:tint="@color/white"
                 android:background="@drawable/button"
                 android:backgroundTint="@color/green"
                 android:contentDescription="next card"/>
