@@ -16,6 +16,9 @@ import com.example.flashcards.models.CardModel
 import com.example.flashcards.views.Dialog
 import com.example.flashcards.views.SnackBar
 
+// TODO: refactor card list to keep source of data in view model
+//  fragment gets re-created whenever screen rotates (more actions too) which causes state loss
+//  reminder to self: DON'T EVER keep state in view >:(
 class EditorFragment : Fragment() {
     private val viewModel by viewModels<EditorViewModel> { EditorViewModel.Factory(stackId) }
 

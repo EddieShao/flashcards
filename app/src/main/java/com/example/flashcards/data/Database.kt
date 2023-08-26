@@ -15,19 +15,13 @@ abstract class Database : RoomDatabase() {
     abstract fun stackDao(): StackDao
 
     companion object {
-        private var _instance: Database? = null
+        private lateinit var _instance: Database
+        val instance get() = synchronized(this) { _instance }
 
-        val instance: Database get() = synchronized(this) { _instance!! }
-
-        fun init(ctx: Context) {
-            // assert because it's crucial to not memory leak db
-            assert(_instance == null) { "Database is already initialized" }
-            _instance = Room.databaseBuilder(ctx, Database::class.java, "database").build()
-        }
-
-        fun destroy() {
-            _instance?.run { if (isOpen) close() }
-            _instance = null
+        fun init(context: Context) {
+            if (::_instance.isInitialized) return
+            _instance =
+                Room.databaseBuilder(context, Database::class.java, "database").build()
         }
     }
 }

@@ -6,7 +6,7 @@ import android.content.SharedPreferences
 import kotlin.reflect.KClass
 
 object SettingsHelper {
-    private var prefs: SharedPreferences? = null
+    private lateinit var prefs: SharedPreferences
 
     private val settings = mutableMapOf<Setting, Any>()
 
@@ -17,7 +17,7 @@ object SettingsHelper {
             Setting.values().mapNotNull { setting ->
                 when (setting.type) {
                     String::class -> {
-                        setting to (prefs?.getString(setting.key, setting.default as String) ?: setting.default)
+                        setting to (prefs.getString(setting.key, setting.default as String) ?: setting.default)
                     }
                     else -> {
                         null
@@ -25,10 +25,6 @@ object SettingsHelper {
                 }
             }
         )
-    }
-
-    fun destroy() {
-        prefs = null
     }
 
     fun settings() = settings.toList().map { it.first }
@@ -51,7 +47,7 @@ object SettingsHelper {
     fun updateValueOf(setting: Setting, value: Any) {
         when (setting.type) {
             String::class -> {
-                prefs?.edit()?.run {
+                prefs.edit().run {
                     putString(setting.key, value as String)
                     apply()
                 }

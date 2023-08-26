@@ -14,11 +14,4 @@ class MainActivity : AppCompatActivity() {
         SettingsHelper.init(this)
         setContentView(R.layout.activity_main)
     }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        Database.destroy()
-        SystemHelper.destroy()
-        SettingsHelper.destroy()
-    }
 }
