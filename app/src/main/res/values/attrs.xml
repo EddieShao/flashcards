@@ -9,6 +9,7 @@
         <attr name="show_delete"/>
         <attr name="show_face"/>
         <attr name="editable"/>
+        <attr name="inner_height" format="string"/>
     </declare-styleable>
     <declare-styleable name="CardListView">
         <attr name="show_flip"/>

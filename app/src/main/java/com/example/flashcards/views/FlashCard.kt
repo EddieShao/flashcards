@@ -21,6 +21,11 @@ class FlashCard @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyle: Int = 0
 ) : FrameLayout(context, attrs, defStyle) {
+    companion object {
+        const val WRAP_CONTENT = "wrap_content"
+        const val MATCH_PARENT = "match_parent"
+    }
+
     enum class Side { FRONT, BACK }
 
     private val binding =
@@ -90,6 +95,22 @@ class FlashCard @JvmOverloads constructor(
             }
         }
 
+    var innerHeight = WRAP_CONTENT
+        set(value) {
+            field = value
+            val valueNum = when (value) {
+                WRAP_CONTENT -> LayoutParams.WRAP_CONTENT
+                MATCH_PARENT -> LayoutParams.MATCH_PARENT
+                else -> throw Exception("Invalid layout height: $value")
+            }
+            binding.root.layoutParams.height = valueNum
+            for (side in listOf(binding.front, binding.back)) {
+                side.root.layoutParams.height = valueNum
+                side.spacerText.layoutParams.height = valueNum
+                side.editText.layoutParams.height = valueNum
+            }
+        }
+
     init {
         val styledAttrs =
             context.theme.obtainStyledAttributes(attrs, R.styleable.FlashCardView, 0, 0)
@@ -98,6 +119,7 @@ class FlashCard @JvmOverloads constructor(
         showDelete = styledAttrs.getBoolean(R.styleable.FlashCardView_show_delete, false)
         showFace = styledAttrs.getBoolean(R.styleable.FlashCardView_show_face, false)
         editable = styledAttrs.getBoolean(R.styleable.FlashCardView_editable, true)
+        innerHeight = styledAttrs.getString(R.styleable.FlashCardView_inner_height) ?: WRAP_CONTENT
 
         for (side in listOf(Side.FRONT, Side.BACK)) {
             fun <T> bySide(front: T, back: T) = when (side) {

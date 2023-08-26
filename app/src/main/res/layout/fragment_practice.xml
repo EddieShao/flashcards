@@ -71,7 +71,8 @@
             custom:show_flip="true"
             custom:show_delete="false"
             custom:show_face="false"
-            custom:editable="false"/>
+            custom:editable="false"
+            custom:inner_height="match_parent"/>
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/progress"
