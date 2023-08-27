@@ -96,6 +96,7 @@ class PracticeFragment : Fragment() {
             setTitle("Leave Practice")
             setMessage("Are you sure you want to leave? Your progress will be lost.")
             setPositiveButton("Leave") { dialog, which ->
+                viewModel.finish()
                 findNavController().popBackStack()
                 dialog.dismiss()
             }

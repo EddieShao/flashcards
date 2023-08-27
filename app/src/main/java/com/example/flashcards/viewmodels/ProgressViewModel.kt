@@ -52,6 +52,12 @@ class ProgressViewModel : ViewModel() {
         }
     }
 
+    fun finish() {
+        doIfStatus<InProgress> {
+            status.value = Finished
+        }
+    }
+
     private inline fun <reified T : Status> doIfStatus(block: (T) -> Unit) {
         status.value?.let { status ->
             if (status is T) {
