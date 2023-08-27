@@ -8,8 +8,11 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.example.flashcards.R
 import com.example.flashcards.databinding.FragmentPracticeBinding
 import com.example.flashcards.helpers.NavArgs
+import com.example.flashcards.viewmodels.Finished
+import com.example.flashcards.viewmodels.InProgress
 import com.example.flashcards.viewmodels.ProgressViewModel
 import com.example.flashcards.views.Dialog
 
@@ -29,6 +32,7 @@ class PracticeFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewModel.start(stackId)
         activity?.onBackPressedDispatcher?.addCallback(onBackPressed)
     }
 
@@ -47,6 +51,37 @@ class PracticeFragment : Fragment() {
 
         binding.back.setOnClickListener {
             activity?.onBackPressedDispatcher?.onBackPressed()
+        }
+
+        binding.prev.setOnClickListener { viewModel.prev() }
+        binding.next.setOnClickListener { viewModel.next() }
+
+        viewModel.status.observe(viewLifecycleOwner) { status ->
+            when (status) {
+                is InProgress -> {
+                    val react = { isHappy: Boolean ->
+                        viewModel.next(isHappy)
+                        if (status.curr == status.size - 1) {
+                            findNavController().navigate(R.id.action_practiceFragment_to_finishFragment)
+                        }
+                    }
+
+                    binding.prev.visibility = if (status.curr == 0) View.GONE else View.VISIBLE
+                    binding.next.visibility = if (status.curr == status.end) View.GONE else View.VISIBLE
+                    with(binding.card) {
+                        front = status.card.front
+                        back = status.card.back
+                    }
+                    binding.progress.text = "${status.curr + 1} / ${status.size}"
+                    binding.sad.setOnClickListener {
+                        react(false)
+                    }
+                    binding.happy.setOnClickListener {
+                        react(true)
+                    }
+                }
+                Finished -> {}
+            }
         }
     }
 
