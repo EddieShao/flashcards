@@ -8,6 +8,7 @@ import com.example.flashcards.data.Database
 import com.example.flashcards.data.entities.Card
 import com.example.flashcards.data.entities.Stack
 import com.example.flashcards.models.CardModel
+import com.example.flashcards.views.FlashCard
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -15,29 +16,20 @@ class EditorViewModel(private val stackId: Int?) : ViewModel() {
     val initStack = MutableLiveData<Stack>()
     val initCards = MutableLiveData<List<CardModel>>()
 
-    init {
-        stackId?.let { stackId ->
-            viewModelScope.launch(Dispatchers.IO) {
-                val (stack, cards) = Database.instance.stackDao().loadStackAndCards(stackId).entries.first()
-                val cardModels = cards.map { card ->
-                    CardModel(card.front, card.back, isHappy = false, card.createdOn, card.id)
-                }
-                initStack.postValue(stack)
-                initCards.postValue(cardModels)
-            }
-        }
-    }
+    var title = ""
+    private val _cards = mutableListOf<CardModel>()
+    val cards get() = _cards.toList()
 
-    fun isDirty(title: String, cards: List<CardModel>): Boolean {
+    val isDirty: Boolean get() {
         val initCards = initCards.value.orEmpty()
         val initTitle = initStack.value?.title.orEmpty()
 
-        if (title != initTitle || cards.size != initCards.size) {
+        if (title != initTitle || _cards.size != initCards.size) {
             return true
         }
 
         val sortedInitCards = initCards.sortedBy { it.hashCode() }
-        val sortedCards = cards.sortedBy { it.hashCode() }
+        val sortedCards = _cards.sortedBy { it.hashCode() }
         for (i in sortedCards.indices) {
             if (sortedCards[i] != sortedInitCards[i]) {
                 return true
@@ -46,10 +38,41 @@ class EditorViewModel(private val stackId: Int?) : ViewModel() {
         return false
     }
 
-    fun createCard() = CardModel(front = "", back = "", isHappy = false)
+    init {
+        stackId?.let { stackId ->
+            viewModelScope.launch(Dispatchers.IO) {
+                val (dbStack, dbCards) = Database.instance.stackDao().loadStackAndCards(stackId).entries.first()
+                val cardModels = dbCards.map { card ->
+                    CardModel(card.front, card.back, isHappy = false, card.createdOn, card.id)
+                }
 
-    fun save(title: String, cards: List<CardModel>) {
-        if (!isDirty(title, cards)) return
+                initStack.postValue(dbStack)
+                initCards.postValue(cardModels)
+
+                title = dbStack.title
+                _cards.clear()
+                _cards.addAll(cardModels)
+            }
+        }
+    }
+
+    fun addCard(index: Int) = CardModel(front = "", back = "", isHappy = false).also { card ->
+        _cards.add(index, card)
+    }
+
+    fun removeCard(index: Int) {
+        _cards.removeAt(index)
+    }
+
+    fun updateCard(index: Int, side: FlashCard.Side, newText: String) {
+        when (side) {
+            FlashCard.Side.FRONT -> _cards[index].front = newText
+            FlashCard.Side.BACK -> _cards[index].back = newText
+        }
+    }
+
+    fun save() {
+        if (!isDirty) return
 
         val stackDao = Database.instance.stackDao()
         val cardDao = Database.instance.cardDao()
@@ -59,8 +82,8 @@ class EditorViewModel(private val stackId: Int?) : ViewModel() {
             } ?: stackDao.insertStack(Stack(title)).toInt()
 
             // toSet() call is safe because createdOn field is (realistically) unique
-            val toDelete = initCards.value.orEmpty().minus(cards.toSet())
-            val (toCreate, toUpdate) = cards.partition { card -> card.id == null }
+            val toDelete = initCards.value.orEmpty().minus(_cards.toSet())
+            val (toCreate, toUpdate) = _cards.partition { card -> card.id == null }
 
             cardDao.deleteCards(*toDelete.map { it.toCard(stackId) }.toTypedArray())
             cardDao.insertCards(*toCreate.map { it.toCard(stackId) }.toTypedArray())

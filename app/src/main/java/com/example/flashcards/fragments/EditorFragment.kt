@@ -6,30 +6,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.flashcards.viewmodels.EditorViewModel
 import com.example.flashcards.databinding.FragmentEditorBinding
 import com.example.flashcards.helpers.NavArgs
 import com.example.flashcards.helpers.SystemHelper
-import com.example.flashcards.models.CardModel
 import com.example.flashcards.views.Dialog
 import com.example.flashcards.views.SnackBar
 
-// TODO: refactor card list to keep source of data in view model
-//  fragment gets re-created whenever screen rotates (more actions too) which causes state loss
-//  reminder to self: DON'T EVER keep state in view >:(
 class EditorFragment : Fragment() {
     private val viewModel by viewModels<EditorViewModel> { EditorViewModel.Factory(stackId) }
 
     private var _binding: FragmentEditorBinding? = null
     private val binding get() = _binding!!
 
-    private val warningSnackBar by lazy {
-        SnackBar(binding.root, SnackBar.LENGTH_SHORT).apply {
-            setText("You must add at least 1 card")
-        }
-    }
+    private val warningSnackBar by lazy { SnackBar(binding.root, SnackBar.LENGTH_SHORT) }
 
     // If null, we're creating a new stack. If not null, we're editing an existing stack
     private val stackId by lazy {
@@ -44,7 +37,7 @@ class EditorFragment : Fragment() {
 
     private val onBackPressed = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
-            if (viewModel.isDirty(binding.title.text.toString(), binding.cardList.cards)) {
+            if (viewModel.isDirty) {
                 showConfirmLeaveDialog()
             } else {
                 findNavController().popBackStack()
@@ -70,10 +63,18 @@ class EditorFragment : Fragment() {
 
         onBackPressed.isEnabled = true
 
-        binding.title.onFocusChangeListener = SystemHelper.hideKeypadListener
+        with(binding.title) {
+            onFocusChangeListener = SystemHelper.hideKeypadListener
+            doOnTextChanged { text, start, before, count ->
+                viewModel.title = text.toString()
+            }
+        }
 
-        binding.cardList.onDelete = { card, position ->
-            showConfirmDeleteDialog(card, position)
+        binding.cardList.onDelete = { position ->
+            showConfirmDeleteDialog(position)
+        }
+        binding.cardList.onTextChanged = { side, text, position ->
+            viewModel.updateCard(position, side, text)
         }
 
         binding.back.setOnClickListener { button ->
@@ -81,15 +82,21 @@ class EditorFragment : Fragment() {
         }
 
         binding.newCard.setOnClickListener { button ->
-            binding.cardList.add(0, viewModel.createCard())
+            val card = viewModel.addCard(0)
+            binding.cardList.add(0, card)
         }
 
         binding.save.setOnClickListener { button ->
-            if (binding.cardList.cards.isEmpty()) {
+            if (viewModel.cards.isEmpty()) {
+                warningSnackBar.setText("You must add at least 1 card")
+                warningSnackBar.show()
+                SystemHelper.hideKeypad(view.windowToken)
+            } else if (viewModel.title.isEmpty()) {
+                warningSnackBar.setText("You must name your card set")
                 warningSnackBar.show()
                 SystemHelper.hideKeypad(view.windowToken)
             } else {
-                viewModel.save(binding.title.text.toString(), binding.cardList.cards)
+                viewModel.save()
                 findNavController().popBackStack()
             }
         }
@@ -124,11 +131,12 @@ class EditorFragment : Fragment() {
         }
     }
 
-    private fun showConfirmDeleteDialog(card: CardModel, position: Int) {
+    private fun showConfirmDeleteDialog(position: Int) {
         Dialog(context).run {
             setTitle("Delete Card")
             setMessage("Are you sure you want to delete this card?")
             setPositiveButton("Delete") { dialog, which ->
+                viewModel.removeCard(position)
                 binding.cardList.remove(position)
                 dialog.dismiss()
             }

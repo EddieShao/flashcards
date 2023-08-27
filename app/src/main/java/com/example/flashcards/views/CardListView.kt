@@ -14,16 +14,16 @@ class CardListView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyle: Int = 0
 ) : LinearLayout(context, attrs, defStyle) {
-    private val _cards = mutableListOf<CardModel>()
-    val cards get() = _cards.toList()
-
     private val showFlip: Boolean
     private val showDelete: Boolean
     private val showFace: Boolean
     private val editable: Boolean
     private val dividerSizeDp: Int
 
-    var onDelete: ((card: CardModel, position: Int) -> Unit)? = null
+    private val itemCount get() = (childCount + 1) / 2
+
+    var onDelete: ((position: Int) -> Unit)? = null
+    var onTextChanged: ((side: FlashCard.Side, text: String, position: Int) -> Unit)? = null
 
     init {
         val styledAttrs =
@@ -44,42 +44,35 @@ class CardListView @JvmOverloads constructor(
                 addView(divider())
             }
         }
-
-        _cards.clear()
-        _cards.addAll(list)
     }
 
     fun add(position: Int, card: CardModel) {
-        if (position > _cards.size) {
-            throw IndexOutOfBoundsException("Index: $position, Size: ${_cards.size}")
+        if (position > itemCount) {
+            throw IndexOutOfBoundsException("Index: $position, Size: $itemCount")
         }
 
         val cardView = createCard(card)
-        if (_cards.isEmpty()) {
+        if (itemCount == 0) {
             addView(cardView)
-        } else if (position == _cards.size) {
+        } else if (position == itemCount) {
             addView(divider())
             addView(cardView)
         } else {
             addView(divider(), position.toLayoutPosition())
             addView(cardView, position.toLayoutPosition())
         }
-
-        _cards.add(position, card)
     }
 
     fun remove(position: Int) {
-        if (position >= _cards.size) {
-            throw IndexOutOfBoundsException("Index: $position, Size: ${_cards.size}")
+        if (position >= itemCount) {
+            throw IndexOutOfBoundsException("Index: $position, Size: $itemCount")
         }
 
-        if (_cards.size == 1) {
+        if (itemCount == 1) {
             removeAllViews()
         } else {
             removeViews(max(0, position.toLayoutPosition() - 1), 2)
         }
-
-        _cards.removeAt(position)
     }
 
     private fun createCard(card: CardModel) =
@@ -88,20 +81,16 @@ class CardListView @JvmOverloads constructor(
             cardView.showDelete = showDelete
             cardView.showFace = showFace
             cardView.editable = editable
-
+            cardView.onDelete = { view ->
+                onDelete?.invoke(indexOfChild(cardView).toPosition())
+            }
+            cardView.onTextChanged = { side, text ->
+                onTextChanged?.invoke(side, text, indexOfChild(cardView).toPosition())
+            }
             with(cardView) {
                 front = card.front
                 back = card.back
                 isHappy = card.isHappy
-                onDelete = { view ->
-                    this@CardListView.onDelete?.invoke(card, _cards.indexOf(card))
-                }
-                onTextChanged = { side, text ->
-                    when (side) {
-                        FlashCard.Side.FRONT -> card.front = text
-                        FlashCard.Side.BACK -> card.back = text
-                    }
-                }
             }
         }
 
@@ -123,4 +112,6 @@ class CardListView @JvmOverloads constructor(
     private fun Int.dpToPx() = (this * Resources.getSystem().displayMetrics.density).toInt()
 
     private fun Int.toLayoutPosition() = this * 2
+
+    private fun Int.toPosition() = this / 2
 }
