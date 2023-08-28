@@ -26,7 +26,13 @@ class PracticeFragment : Fragment() {
 
     private val onBackPressed = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
-            showConfirmLeaveDialog()
+            val currStat = viewModel.status.value
+            if (currStat is InProgress && currStat.end > 0) {
+                showConfirmLeaveDialog()
+            } else {
+                viewModel.finish()
+                findNavController().popBackStack()
+            }
         }
     }
 
