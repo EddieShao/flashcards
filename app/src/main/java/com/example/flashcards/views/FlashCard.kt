@@ -35,6 +35,8 @@ class FlashCard @JvmOverloads constructor(
 
     var onTextChanged: ((side: Side, text: String) -> Unit)? = null
 
+    var onFlip: ((visibleSide: Side) -> Unit)? = null
+
     var showFlip = false
         set(value) {
             field = value
@@ -111,9 +113,9 @@ class FlashCard @JvmOverloads constructor(
             }
         }
 
-    var visibleSide = Side.FRONT
+    var visibleSide
+        get() = if (binding.front.root.isVisible) Side.FRONT else Side.BACK
         set(value) {
-            field = value
             when (value) {
                 Side.FRONT -> {
                     binding.front.root.visibility = View.GONE
@@ -227,6 +229,7 @@ class FlashCard @JvmOverloads constructor(
 
         flipToFront.doOnEnd {
             from.visibility = View.GONE
+            onFlip?.invoke(visibleSide)
         }
 
         flipToBack.start()

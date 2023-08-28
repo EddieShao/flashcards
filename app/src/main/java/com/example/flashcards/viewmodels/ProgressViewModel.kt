@@ -4,10 +4,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.flashcards.data.Database
+import com.example.flashcards.helpers.RevealSideOption
+import com.example.flashcards.helpers.Setting
+import com.example.flashcards.helpers.SettingsHelper
 import com.example.flashcards.models.CardModel
+import com.example.flashcards.views.FlashCard
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlin.math.max
+import kotlin.random.Random
 
 class ProgressViewModel : ViewModel() {
     var cards = emptyList<CardModel>()
@@ -20,7 +25,14 @@ class ProgressViewModel : ViewModel() {
         doIfStatus<Finished> {
             viewModelScope.launch(Dispatchers.IO) {
                 cards = Database.instance.cardDao().loadCardsWithStackId(stackId).map { card ->
-                    CardModel(card.front, card.back, false, card.createdOn, card.id)
+                    CardModel(
+                        front = card.front,
+                        back = card.back,
+                        isHappy = false,
+                        visibleSide = decideRevealSide(),
+                        createdOn = card.createdOn,
+                        id = card.id
+                    )
                 }
                 status.postValue(InProgress(0, 0, cards.size, cards.first()))
             }
@@ -60,6 +72,19 @@ class ProgressViewModel : ViewModel() {
             status.value = Finished
         }
     }
+
+    fun setVisibleSide(index: Int, side: FlashCard.Side) {
+        cards[index].visibleSide = side
+    }
+
+    private fun decideRevealSide() =
+        when (SettingsHelper.currentOptionOf<RevealSideOption>(Setting.REVEAL_SIDE)) {
+            RevealSideOption.FRONT -> FlashCard.Side.FRONT
+            RevealSideOption.BACK -> FlashCard.Side.BACK
+            RevealSideOption.RANDOM ->
+                if (Random.nextBoolean()) FlashCard.Side.FRONT else FlashCard.Side.BACK
+            else -> FlashCard.Side.FRONT
+        }
 
     private inline fun <reified T : Status> doIfStatus(block: (T) -> Unit) {
         status.value?.let { status ->

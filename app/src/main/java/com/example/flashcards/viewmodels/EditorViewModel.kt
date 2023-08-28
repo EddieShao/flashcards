@@ -43,7 +43,14 @@ class EditorViewModel(private val stackId: Int?) : ViewModel() {
             viewModelScope.launch(Dispatchers.IO) {
                 val (dbStack, dbCards) = Database.instance.stackDao().loadStackAndCards(stackId).entries.first()
                 val cardModels = dbCards.map { card ->
-                    CardModel(card.front, card.back, isHappy = false, card.createdOn, card.id)
+                    CardModel(
+                        front = card.front,
+                        back = card.back,
+                        isHappy = false,
+                        visibleSide = FlashCard.Side.FRONT,
+                        createdOn = card.createdOn,
+                        id = card.id
+                    )
                 }
 
                 initStack.postValue(dbStack)
@@ -56,7 +63,12 @@ class EditorViewModel(private val stackId: Int?) : ViewModel() {
         }
     }
 
-    fun addCard(index: Int) = CardModel(front = "", back = "", isHappy = false).also { card ->
+    fun addCard(index: Int) = CardModel(
+        front = "",
+        back = "",
+        isHappy = false,
+        visibleSide = FlashCard.Side.FRONT
+    ).also { card ->
         _cards.add(index, card)
     }
 
