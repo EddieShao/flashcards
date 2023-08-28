@@ -9,6 +9,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.flashcards.databinding.FragmentReviewBinding
 import com.example.flashcards.viewmodels.ProgressViewModel
+import com.example.flashcards.views.FlashCard
 
 class ReviewFragment : Fragment() {
     private val viewModel by activityViewModels<ProgressViewModel>()
@@ -32,7 +33,7 @@ class ReviewFragment : Fragment() {
         }
 
         with(binding.cards) {
-            submitList(viewModel.cards)
+            submitList(viewModel.overview)
         }
     }
 

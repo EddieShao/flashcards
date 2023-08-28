@@ -32,45 +32,43 @@ class FlashCard @JvmOverloads constructor(
         CardBinding.inflate(LayoutInflater.from(context), this, true)
 
     var onDelete: ((view: View) -> Unit)? = null
-
     var onTextChanged: ((side: Side, text: String) -> Unit)? = null
-
     var onFlip: ((visibleSide: Side) -> Unit)? = null
 
-    var showFlip = false
+    var showFlip: Boolean
+        get() = binding.front.flip.isVisible
         set(value) {
-            field = value
             val visibility = if (value) View.VISIBLE else View.GONE
             binding.front.flip.visibility = visibility
             binding.back.flip.visibility = visibility
         }
 
-    var showDelete = false
+    var showDelete: Boolean
+        get() = binding.front.delete.isVisible
         set(value) {
-            field = value
             val visibility = if (value) View.VISIBLE else View.GONE
             binding.front.delete.visibility = visibility
             binding.back.delete.visibility = visibility
         }
 
-    var showFace = false
+    var showFace: Boolean
+        get() = binding.front.face.isVisible
         set(value) {
-            field = value
             val visibility = if (value) View.VISIBLE else View.GONE
             binding.front.face.visibility = visibility
             binding.back.face.visibility = visibility
         }
 
-    var front = ""
+    var front
+        get() = binding.front.editText.text.toString()
         set(value) {
-            field = value
             binding.front.editText.setText(value)
             binding.back.spacerText.setText(value)
         }
 
-    var back = ""
+    var back
+        get() = binding.back.editText.text.toString()
         set(value) {
-            field = value
             binding.front.spacerText.setText(value)
             binding.back.editText.setText(value)
         }

@@ -15,11 +15,12 @@ import kotlin.math.max
 import kotlin.random.Random
 
 class ProgressViewModel : ViewModel() {
-    var cards = emptyList<CardModel>()
+    private var cards = emptyList<CardModel>()
     val status = MutableLiveData<Status>(Finished)
 
     val numCorrect get() = cards.count { card -> card.isHappy }
     val numIncorrect get() = cards.count { card -> !card.isHappy }
+    val overview get() = cards.map { card -> card.copy(visibleSide = FlashCard.Side.FRONT) }
 
     fun start(stackId: Int) {
         doIfStatus<Finished> {
