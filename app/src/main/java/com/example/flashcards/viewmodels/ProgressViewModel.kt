@@ -13,6 +13,9 @@ class ProgressViewModel : ViewModel() {
     private var cards = emptyList<CardModel>()
     val status = MutableLiveData<Status>(Finished)
 
+    val numCorrect get() = cards.count { card -> card.isHappy }
+    val numIncorrect get() = cards.count { card -> !card.isHappy }
+
     fun start(stackId: Int) {
         doIfStatus<Finished> {
             viewModelScope.launch(Dispatchers.IO) {

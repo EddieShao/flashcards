@@ -71,6 +71,7 @@ class PracticeFragment : Fragment() {
                     with(binding.card) {
                         front = status.card.front
                         back = status.card.back
+                        // TODO: choose which side of card to reveal depending on setting
                     }
                     binding.progress.text = "${status.curr + 1} / ${status.size}"
                     binding.sad.setOnClickListener {
