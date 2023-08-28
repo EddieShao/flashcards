@@ -111,6 +111,23 @@ class FlashCard @JvmOverloads constructor(
             }
         }
 
+    var visibleSide = Side.FRONT
+        set(value) {
+            field = value
+            when (value) {
+                Side.FRONT -> {
+                    binding.front.root.visibility = View.GONE
+                    binding.back.root.visibility = View.VISIBLE
+                    snap()
+                }
+                Side.BACK -> {
+                    binding.front.root.visibility = View.VISIBLE
+                    binding.back.root.visibility = View.GONE
+                    snap()
+                }
+            }
+        }
+
     init {
         val styledAttrs =
             context.theme.obtainStyledAttributes(attrs, R.styleable.FlashCardView, 0, 0)
@@ -120,6 +137,11 @@ class FlashCard @JvmOverloads constructor(
         showFace = styledAttrs.getBoolean(R.styleable.FlashCardView_show_face, false)
         editable = styledAttrs.getBoolean(R.styleable.FlashCardView_editable, true)
         innerHeight = styledAttrs.getString(R.styleable.FlashCardView_inner_height) ?: WRAP_CONTENT
+        visibleSide = when (styledAttrs.getString(R.styleable.FlashCardView_visible_side)) {
+            "front" -> Side.FRONT
+            "back" -> Side.BACK
+            else -> Side.FRONT
+        }
 
         for (side in listOf(Side.FRONT, Side.BACK)) {
             fun <T> bySide(front: T, back: T) = when (side) {
@@ -174,9 +196,20 @@ class FlashCard @JvmOverloads constructor(
         }
     }
 
+    private fun snap() {
+        val (from, to) = assignTransitionSides()
+
+        from.alpha = 0f
+        from.rotationY = 180f
+        from.visibility = View.GONE
+
+        to.alpha = 1f
+        to.rotationY = 0f
+        to.visibility = View.VISIBLE
+    }
+
     private fun flip() {
-        val from = if (binding.front.root.isVisible) binding.front.root else binding.back.root
-        val to = if (binding.front.root.isVisible) binding.back.root else binding.front.root
+        val (from, to) = assignTransitionSides()
 
         to.visibility = View.VISIBLE
 
@@ -198,5 +231,11 @@ class FlashCard @JvmOverloads constructor(
 
         flipToBack.start()
         flipToFront.start()
+    }
+
+    private fun assignTransitionSides(): Pair<View, View> {
+        val from = if (binding.front.root.isVisible) binding.front.root else binding.back.root
+        val to = if (binding.front.root.isVisible) binding.back.root else binding.front.root
+        return Pair(from, to)
     }
 }

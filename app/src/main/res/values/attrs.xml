@@ -10,6 +10,7 @@
         <attr name="show_face"/>
         <attr name="editable"/>
         <attr name="inner_height" format="string"/>
+        <attr name="visible_side" format="string"/>
     </declare-styleable>
     <declare-styleable name="CardListView">
         <attr name="show_flip"/>
