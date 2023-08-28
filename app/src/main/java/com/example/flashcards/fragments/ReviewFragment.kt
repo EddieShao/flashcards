@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.example.flashcards.databinding.FragmentReviewBinding
 import com.example.flashcards.viewmodels.ProgressViewModel
 
@@ -21,6 +22,18 @@ class ReviewFragment : Fragment() {
     ): View {
         _binding = FragmentReviewBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.back.setOnClickListener {
+            findNavController().popBackStack()
+        }
+
+        with(binding.cards) {
+            submitList(viewModel.cards)
+        }
     }
 
     override fun onDestroyView() {

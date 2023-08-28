@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 import kotlin.math.max
 
 class ProgressViewModel : ViewModel() {
-    private var cards = emptyList<CardModel>()
+    var cards = emptyList<CardModel>()
     val status = MutableLiveData<Status>(Finished)
 
     val numCorrect get() = cards.count { card -> card.isHappy }
