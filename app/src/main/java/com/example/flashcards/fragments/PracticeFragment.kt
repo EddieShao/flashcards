@@ -64,32 +64,7 @@ class PracticeFragment : Fragment() {
 
         viewModel.status.observe(viewLifecycleOwner) { status ->
             when (status) {
-                is InProgress -> {
-                    val react = { isHappy: Boolean ->
-                        viewModel.next(isHappy)
-                        if (status.curr == status.size - 1) {
-                            findNavController().navigate(R.id.action_practiceFragment_to_finishFragment)
-                        }
-                    }
-
-                    binding.prev.visibility = if (status.curr == 0) View.GONE else View.VISIBLE
-                    binding.next.visibility = if (status.curr == status.end) View.GONE else View.VISIBLE
-                    with(binding.card) {
-                        front = status.card.front
-                        back = status.card.back
-                        visibleSide = status.card.visibleSide
-                        onFlip = { visibleSide ->
-                            viewModel.setVisibleSide(status.curr, visibleSide)
-                        }
-                    }
-                    binding.progress.text = "${status.curr + 1} / ${status.size}"
-                    binding.sad.setOnClickListener {
-                        react(false)
-                    }
-                    binding.happy.setOnClickListener {
-                        react(true)
-                    }
-                }
+                is InProgress -> updateCardDisplay(status)
                 Finished -> {}
             }
         }
@@ -99,6 +74,32 @@ class PracticeFragment : Fragment() {
         super.onDestroyView()
         onBackPressed.isEnabled = false
         _binding = null
+    }
+
+    private fun updateCardDisplay(progress: InProgress) {
+        binding.prev.visibility = if (progress.curr == 0) View.GONE else View.VISIBLE
+        binding.next.visibility = if (progress.curr == progress.end) View.GONE else View.VISIBLE
+        with(binding.card) {
+            front = progress.card.front
+            back = progress.card.back
+            visibleSide = progress.card.visibleSide
+            onFlip = { visibleSide ->
+                viewModel.setVisibleSide(progress.curr, visibleSide)
+            }
+        }
+        binding.progress.text = "${progress.curr + 1} / ${progress.size}"
+        binding.sad.setOnClickListener {
+            viewModel.next(false)
+            if (progress.curr == progress.size - 1) {
+                findNavController().navigate(R.id.action_practiceFragment_to_finishFragment)
+            }
+        }
+        binding.happy.setOnClickListener {
+            viewModel.next(true)
+            if (progress.curr == progress.size - 1) {
+                findNavController().navigate(R.id.action_practiceFragment_to_finishFragment)
+            }
+        }
     }
 
     private fun showConfirmLeaveDialog() {
