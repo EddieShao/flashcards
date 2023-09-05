@@ -35,7 +35,7 @@ class ProgressViewModel : ViewModel() {
                         id = card.id
                     )
                 }
-                status.postValue(InProgress(0, 0, cards.size, cards.first()))
+                status.postValue(InProgress(0, null, 0, cards.size, cards.first()))
             }
         }
     }
@@ -45,7 +45,7 @@ class ProgressViewModel : ViewModel() {
             cards = cards.shuffled()
             // We MUST call this from the main (aka blocking) thread because its value must be
             // changed to InProgress before we possibly call start again.
-            status.value = InProgress(0, 0, cards.size, cards.first())
+            status.value = InProgress(0, null, 0, cards.size, cards.first())
         }
     }
 
@@ -56,7 +56,7 @@ class ProgressViewModel : ViewModel() {
             if (next == progress.size) {
                 status.value = Finished
             } else {
-                status.value = InProgress(next, max(next, progress.end), progress.size, cards[next])
+                status.value = InProgress(next, progress.curr, max(next, progress.end), progress.size, cards[next])
             }
         }
     }
@@ -64,7 +64,7 @@ class ProgressViewModel : ViewModel() {
     fun prev() {
         doIfStatus<InProgress> { progress ->
             val prev = progress.curr - 1
-            status.value = InProgress(prev, progress.end, progress.size, cards[prev])
+            status.value = InProgress(prev, progress.curr, progress.end, progress.size, cards[prev])
         }
     }
 
@@ -98,4 +98,4 @@ class ProgressViewModel : ViewModel() {
 
 sealed class Status
 object Finished : Status()
-data class InProgress(val curr: Int, val end: Int, val size: Int, val card: CardModel) : Status()
+data class InProgress(val curr: Int, val prev: Int?, val end: Int, val size: Int, val card: CardModel) : Status()

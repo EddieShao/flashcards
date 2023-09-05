@@ -1,16 +1,20 @@
 package com.example.flashcards.fragments
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
+import androidx.core.animation.doOnEnd
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.flashcards.R
 import com.example.flashcards.databinding.FragmentPracticeBinding
 import com.example.flashcards.helpers.NavArgs
+import com.example.flashcards.helpers.SystemHelper.dp
 import com.example.flashcards.viewmodels.Finished
 import com.example.flashcards.viewmodels.InProgress
 import com.example.flashcards.viewmodels.ProgressViewModel
@@ -59,9 +63,6 @@ class PracticeFragment : Fragment() {
             activity?.onBackPressedDispatcher?.onBackPressed()
         }
 
-        binding.prev.setOnClickListener { viewModel.prev() }
-        binding.next.setOnClickListener { viewModel.next() }
-
         viewModel.status.observe(viewLifecycleOwner) { status ->
             when (status) {
                 is InProgress -> updateCardDisplay(status)
@@ -77,28 +78,59 @@ class PracticeFragment : Fragment() {
     }
 
     private fun updateCardDisplay(progress: InProgress) {
-        binding.prev.visibility = if (progress.curr == 0) View.GONE else View.VISIBLE
-        binding.next.visibility = if (progress.curr == progress.end) View.GONE else View.VISIBLE
-        with(binding.card) {
-            front = progress.card.front
-            back = progress.card.back
-            visibleSide = progress.card.visibleSide
-            onFlip = { visibleSide ->
-                viewModel.setVisibleSide(progress.curr, visibleSide)
-            }
+        binding.prev.setOnClickListener { viewModel.prev() }
+        binding.prev.visibility = if (progress.curr == 0) View.INVISIBLE else View.VISIBLE
+
+        binding.next.setOnClickListener { viewModel.next() }
+        binding.next.visibility = if (progress.curr == progress.end) View.INVISIBLE else View.VISIBLE
+
+        progress.prev?.let { prev ->
+            shuffle(
+                forward = progress.curr > prev,
+                onStart = { populateCard(progress) },
+                onEnd = { populateDecorCard(progress) }
+            )
+        } ?: run {
+            populateCard(progress)
+            populateDecorCard(progress)
         }
+
+        binding.decorCard.onFlip = null
+
         binding.progress.text = "${progress.curr + 1} / ${progress.size}"
+
         binding.sad.setOnClickListener {
             viewModel.next(false)
             if (progress.curr == progress.size - 1) {
                 findNavController().navigate(R.id.action_practiceFragment_to_finishFragment)
             }
         }
+
         binding.happy.setOnClickListener {
             viewModel.next(true)
             if (progress.curr == progress.size - 1) {
                 findNavController().navigate(R.id.action_practiceFragment_to_finishFragment)
             }
+        }
+    }
+
+    private fun populateCard(progress: InProgress) {
+        with(binding.card) {
+            front = progress.card.front
+            back = progress.card.back
+            visibleSide = progress.card.visibleSide
+            onFlip = { visibleSide ->
+                binding.decorCard.visibleSide = visibleSide
+                viewModel.setVisibleSide(progress.curr, visibleSide)
+            }
+        }
+    }
+
+    private fun populateDecorCard(progress: InProgress) {
+        with(binding.decorCard) {
+            front = progress.card.front
+            back = progress.card.back
+            visibleSide = progress.card.visibleSide
         }
     }
 
@@ -115,6 +147,51 @@ class PracticeFragment : Fragment() {
                 dialog.cancel()
             }
             show()
+        }
+    }
+
+    private fun shuffle(forward: Boolean, onStart: () -> Unit, onEnd: () -> Unit) {
+        val shuffler = ShuffleAnimator.createFor(if (forward) binding.decorCard else binding.card)
+
+        shuffler.shuffleOut.doOnEnd {
+            binding.card.translationZ = 1f
+            binding.decorCard.translationZ = 0f
+            shuffler.shuffleIn.start()
+        }
+
+        shuffler.shuffleIn.doOnEnd {
+            binding.decorCard.visibility = View.INVISIBLE
+            onEnd()
+        }
+
+        binding.card.translationZ = 0f
+        binding.decorCard.translationZ = 1f
+        binding.decorCard.visibility = View.VISIBLE
+        onStart()
+        shuffler.shuffleOut.start()
+    }
+}
+
+private class ShuffleAnimator private constructor(
+    val shuffleOut: AnimatorSet,
+    val shuffleIn: AnimatorSet
+) {
+    companion object {
+        fun createFor(view: View): ShuffleAnimator {
+            val xOffsetDp = (view.width / 4f).dp
+            val yOffsetDp = (view.height * -0.37f).dp
+
+            val rotateOut = ObjectAnimator.ofFloat(view, "rotation", 0f, 25f).setDuration(250)
+            val rotateIn = ObjectAnimator.ofFloat(view, "rotation", 25f, 0f).setDuration(250)
+            val xOut = ObjectAnimator.ofFloat(view, "translationX", 0f, xOffsetDp).setDuration(250)
+            val xIn = ObjectAnimator.ofFloat(view, "translationX", xOffsetDp, 0f).setDuration(250)
+            val yOut = ObjectAnimator.ofFloat(view, "translationY", 0f, yOffsetDp).setDuration(250)
+            val yIn = ObjectAnimator.ofFloat(view, "translationY", yOffsetDp, 0f).setDuration(250)
+
+            return ShuffleAnimator(
+                AnimatorSet().apply { playTogether(rotateOut, xOut, yOut) },
+                AnimatorSet().apply { playTogether(rotateIn, xIn, yIn) }
+            )
         }
     }
 }

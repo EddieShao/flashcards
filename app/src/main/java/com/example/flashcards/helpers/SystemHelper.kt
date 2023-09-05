@@ -2,12 +2,15 @@ package com.example.flashcards.helpers
 
 import android.app.Activity
 import android.content.Context
+import android.content.res.Resources
 import android.os.IBinder
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 
 object SystemHelper {
     private lateinit var getService: (name: String) -> Any
+
+    val Float.dp get() = (this * Resources.getSystem().displayMetrics.density + 0.5f)
 
     val hideKeypadListener = View.OnFocusChangeListener { view, hasFocus ->
         if (!hasFocus) {

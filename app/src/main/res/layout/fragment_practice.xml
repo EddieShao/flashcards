@@ -19,109 +19,106 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
-    <LinearLayout
-        android:orientation="vertical"
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/prev"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:layout_marginStart="24dp"
+        android:padding="12dp"
+        android:src="@drawable/play_24"
+        android:tint="@color/primary"
+        android:backgroundTint="@color/background"
+        android:scaleX="-1"
+        android:contentDescription="previous card"
+        app:layout_constraintTop_toBottomOf="@id/back"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:padding="12dp"
+        android:src="@drawable/play_24"
+        android:tint="@color/primary"
+        android:backgroundTint="@color/background"
+        android:contentDescription="next card"
+        app:layout_constraintTop_toTopOf="@id/prev"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <com.example.flashcards.views.FlashCard
+        android:id="@+id/card"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginBottom="60dp"
         android:layout_marginHorizontal="24dp"
-        android:paddingVertical="60dp"
-        app:layout_constraintTop_toBottomOf="@+id/back"
-        app:layout_constraintBottom_toBottomOf="parent">
+        android:translationZ="1dp"
+        android:outlineProvider="none"
+        custom:show_flip="true"
+        custom:show_delete="false"
+        custom:show_face="false"
+        custom:editable="false"
+        custom:inner_height="match_parent"
+        app:layout_constraintTop_toBottomOf="@id/prev"
+        app:layout_constraintBottom_toTopOf="@id/progress"/>
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="48dp">
+    <com.example.flashcards.views.FlashCard
+        android:id="@+id/decor_card"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="24dp"
+        android:translationZ="0dp"
+        android:outlineProvider="none"
+        android:visibility="invisible"
+        custom:show_flip="true"
+        custom:show_delete="false"
+        custom:show_face="false"
+        custom:editable="false"
+        custom:inner_height="match_parent"
+        app:layout_constraintTop_toBottomOf="@id/prev"
+        app:layout_constraintBottom_toTopOf="@id/progress"/>
 
-            <androidx.appcompat.widget.AppCompatImageButton
-                android:id="@+id/prev"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="12dp"
-                android:src="@drawable/play_24"
-                android:tint="@color/primary"
-                android:backgroundTint="@color/background"
-                android:scaleX="-1"
-                android:contentDescription="previous card"/>
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/progress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:layout_marginHorizontal="24dp"
+        android:textColor="@color/primary"
+        android:gravity="end"
+        app:layout_constraintBottom_toTopOf="@id/sad"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="6 / 20"/>
 
-            <!-- spacing to align items to ends of card -->
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1"/>
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/sad"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="100dp"
+        android:layout_marginStart="24dp"
+        android:paddingVertical="16dp"
+        android:paddingHorizontal="56dp"
+        android:src="@drawable/sad_30"
+        android:tint="@color/white"
+        android:background="@drawable/button"
+        android:backgroundTint="@color/red"
+        android:contentDescription="previous card"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
 
-            <androidx.appcompat.widget.AppCompatImageButton
-                android:id="@+id/next"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="12dp"
-                android:src="@drawable/play_24"
-                android:tint="@color/primary"
-                android:backgroundTint="@color/background"
-                android:contentDescription="next card"/>
-
-        </LinearLayout>
-
-        <com.example.flashcards.views.FlashCard
-            android:id="@+id/card"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            custom:show_flip="true"
-            custom:show_delete="false"
-            custom:show_face="false"
-            custom:editable="false"
-            custom:inner_height="match_parent"/>
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/progress"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="12dp"
-            android:gravity="end"
-            android:textColor="@color/primary"
-            tools:text="6 / 20"/>
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp">
-
-            <androidx.appcompat.widget.AppCompatImageButton
-                android:id="@+id/sad"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingVertical="16dp"
-                android:paddingHorizontal="56dp"
-                android:src="@drawable/sad_30"
-                android:tint="@color/white"
-                android:background="@drawable/button"
-                android:backgroundTint="@color/red"
-                android:contentDescription="previous card"/>
-
-            <!-- spacing to align items to ends of card -->
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1"/>
-
-            <androidx.appcompat.widget.AppCompatImageButton
-                android:id="@+id/happy"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingVertical="16dp"
-                android:paddingHorizontal="56dp"
-                android:src="@drawable/happy_30"
-                android:tint="@color/white"
-                android:background="@drawable/button"
-                android:backgroundTint="@color/green"
-                android:contentDescription="next card"/>
-
-        </LinearLayout>
-
-    </LinearLayout>
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/happy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:paddingVertical="16dp"
+        android:paddingHorizontal="56dp"
+        android:src="@drawable/happy_30"
+        android:tint="@color/white"
+        android:background="@drawable/button"
+        android:backgroundTint="@color/green"
+        android:contentDescription="next card"
+        app:layout_constraintBottom_toBottomOf="@id/sad"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
