@@ -3,6 +3,7 @@ package com.example.flashcards.views
 import android.animation.AnimatorInflater
 import android.animation.AnimatorSet
 import android.content.Context
+import android.media.MediaPlayer
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -171,6 +172,7 @@ class FlashCard @JvmOverloads constructor(
                 contentDescription = "Flip to ${bySide("front", "back")} side"
                 setOnClickListener {
                     if (flipEnabled) {
+                        MediaPlayer.create(context, R.raw.card_slide).start()
                         flip()
                     }
                 }
