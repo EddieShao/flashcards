@@ -2,6 +2,7 @@ package com.example.flashcards.fragments
 
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.media.MediaPlayer
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -14,6 +15,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.flashcards.R
 import com.example.flashcards.databinding.FragmentPracticeBinding
 import com.example.flashcards.helpers.NavArgs
+import com.example.flashcards.helpers.SystemHelper
 import com.example.flashcards.helpers.SystemHelper.dp
 import com.example.flashcards.viewmodels.Finished
 import com.example.flashcards.viewmodels.InProgress
@@ -59,6 +61,8 @@ class PracticeFragment : Fragment() {
 
         onBackPressed.isEnabled = true
 
+        binding.decorCard.flipEnabled = false
+
         binding.back.setOnClickListener {
             activity?.onBackPressedDispatcher?.onBackPressed()
         }
@@ -86,7 +90,7 @@ class PracticeFragment : Fragment() {
 
         progress.prev?.let { prev ->
             shuffle(
-                forward = progress.curr > prev,
+                toBack = progress.curr > prev,
                 onStart = { populateCard(progress) },
                 onEnd = { populateDecorCard(progress) }
             )
@@ -102,14 +106,18 @@ class PracticeFragment : Fragment() {
         binding.sad.setOnClickListener {
             viewModel.next(false)
             if (progress.curr == progress.size - 1) {
-                findNavController().navigate(R.id.action_practiceFragment_to_finishFragment)
+                slideOut {
+                    findNavController().navigate(R.id.action_practiceFragment_to_finishFragment)
+                }
             }
         }
 
         binding.happy.setOnClickListener {
             viewModel.next(true)
             if (progress.curr == progress.size - 1) {
-                findNavController().navigate(R.id.action_practiceFragment_to_finishFragment)
+                slideOut {
+                    findNavController().navigate(R.id.action_practiceFragment_to_finishFragment)
+                }
             }
         }
     }
@@ -150,8 +158,9 @@ class PracticeFragment : Fragment() {
         }
     }
 
-    private fun shuffle(forward: Boolean, onStart: () -> Unit, onEnd: () -> Unit) {
-        val shuffler = ShuffleAnimator.createFor(if (forward) binding.decorCard else binding.card)
+    private fun shuffle(toBack: Boolean, onStart: () -> Unit, onEnd: () -> Unit) {
+        val shuffler = ShuffleAnimator.createFor(if (toBack) binding.decorCard else binding.card)
+        val sound = MediaPlayer.create(context, R.raw.card_flip)
 
         shuffler.shuffleOut.doOnEnd {
             binding.card.translationZ = 1f
@@ -161,14 +170,33 @@ class PracticeFragment : Fragment() {
 
         shuffler.shuffleIn.doOnEnd {
             binding.decorCard.visibility = View.INVISIBLE
+            binding.card.flipEnabled = true
             onEnd()
         }
 
+        binding.card.flipEnabled = false
         binding.card.translationZ = 0f
         binding.decorCard.translationZ = 1f
         binding.decorCard.visibility = View.VISIBLE
         onStart()
+        sound.start()
         shuffler.shuffleOut.start()
+    }
+
+    private fun slideOut(onEnd: () -> Unit) {
+        val rotate = ObjectAnimator.ofFloat(binding.card, "rotation", 0f, 10f).setDuration(260)
+        val translateX = ObjectAnimator.ofFloat(binding.card, "translationX", 0f, SystemHelper.screenSize.first * 1.4f).setDuration(260)
+        val translateY = ObjectAnimator.ofFloat(binding.card, "translationY", 0f, 10f).setDuration(100)
+        AnimatorSet().apply {
+            playTogether(rotate, translateX, translateY)
+            doOnEnd {
+                binding.card.flipEnabled = true
+                onEnd()
+            }
+            binding.card.flipEnabled = false
+            MediaPlayer.create(context, R.raw.card_slide).start()
+            start()
+        }
     }
 }
 

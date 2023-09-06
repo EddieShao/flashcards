@@ -35,6 +35,8 @@ class FlashCard @JvmOverloads constructor(
     var onTextChanged: ((side: Side, text: String) -> Unit)? = null
     var onFlip: ((visibleSide: Side) -> Unit)? = null
 
+    var flipEnabled = true
+
     var showFlip: Boolean
         get() = binding.front.flip.isVisible
         set(value) {
@@ -167,7 +169,11 @@ class FlashCard @JvmOverloads constructor(
                     )
                 )
                 contentDescription = "Flip to ${bySide("front", "back")} side"
-                setOnClickListener { flip() }
+                setOnClickListener {
+                    if (flipEnabled) {
+                        flip()
+                    }
+                }
             }
 
             with(cardSide.delete) {

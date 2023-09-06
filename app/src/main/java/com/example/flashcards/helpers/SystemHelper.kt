@@ -12,6 +12,10 @@ object SystemHelper {
 
     val Float.dp get() = (this * Resources.getSystem().displayMetrics.density + 0.5f)
 
+    val screenSize get() = Resources.getSystem().displayMetrics.let { metrics ->
+        metrics.widthPixels to metrics.heightPixels
+    }
+
     val hideKeypadListener = View.OnFocusChangeListener { view, hasFocus ->
         if (!hasFocus) {
             hideKeypad(view.windowToken)
