@@ -1,5 +1,6 @@
 package com.example.flashcards.fragments
 
+import android.media.MediaPlayer
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -26,7 +27,9 @@ class FinishFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        activity?.onBackPressedDispatcher?.addCallback(onBackPressed)
+        // TODO: figure out how to only play this once. right now it plays whenever screen changes
+        //  vertical/horizontal (whenever onCreate is called)
+        MediaPlayer.create(context, R.raw.finish).start()
     }
 
     override fun onCreateView(
@@ -40,7 +43,7 @@ class FinishFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        onBackPressed.isEnabled = true
+        activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, onBackPressed)
 
         binding.numCorrect.text = "${viewModel.numCorrect} Correct"
         binding.numIncorrect.text = "${viewModel.numIncorrect} Incorrect"
@@ -58,7 +61,6 @@ class FinishFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        onBackPressed.isEnabled = false
         _binding = null
     }
 }

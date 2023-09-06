@@ -45,11 +45,6 @@ class EditorFragment : Fragment() {
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        activity?.onBackPressedDispatcher?.addCallback(onBackPressed)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -61,7 +56,7 @@ class EditorFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        onBackPressed.isEnabled = true
+        activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, onBackPressed)
 
         with(binding.title) {
             onFocusChangeListener = SystemHelper.hideKeypadListener
@@ -112,7 +107,6 @@ class EditorFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        onBackPressed.isEnabled = false
         _binding = null
     }
 

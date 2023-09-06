@@ -45,7 +45,6 @@ class PracticeFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.start(stackId)
-        activity?.onBackPressedDispatcher?.addCallback(onBackPressed)
     }
 
     override fun onCreateView(
@@ -59,7 +58,7 @@ class PracticeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        onBackPressed.isEnabled = true
+        activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, onBackPressed)
 
         binding.decorCard.flipEnabled = false
 
@@ -77,7 +76,6 @@ class PracticeFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        onBackPressed.isEnabled = false
         _binding = null
     }
 
