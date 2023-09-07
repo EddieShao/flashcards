@@ -47,7 +47,6 @@ class StackAdapter(
             }
             holder.binding.play.setOnClickListener { playButton ->
                 onPlayClicked(stack.id)
-                playButton.findNavController().navigate(R.id.action_stackListFragment_to_practiceFragment)
             }
             holder.binding.kebabMenu.setOnClickListener { kebabMenu ->
                 val popupMenu = PopupMenu(kebabMenu.context, kebabMenu)

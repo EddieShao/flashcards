@@ -7,20 +7,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.flashcards.R
 import com.example.flashcards.databinding.FragmentFinishBinding
-import com.example.flashcards.viewmodels.ProgressViewModel
+import com.example.flashcards.helpers.ProgressManager
+import com.example.flashcards.viewmodels.FinishViewModel
 
 class FinishFragment : Fragment() {
-    private val viewModel by activityViewModels<ProgressViewModel>()
+    private val viewModel by viewModels<FinishViewModel>()
 
     private var _binding: FragmentFinishBinding? = null
     private val binding get() = _binding!!
 
     private val onBackPressed = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
+            ProgressManager.stop()
             findNavController().popBackStack(R.id.stackListFragment, false)
         }
     }

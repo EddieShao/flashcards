@@ -10,30 +10,34 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.core.animation.doOnEnd
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.flashcards.R
 import com.example.flashcards.databinding.FragmentPracticeBinding
 import com.example.flashcards.helpers.SystemHelper
 import com.example.flashcards.helpers.SystemHelper.dp
-import com.example.flashcards.viewmodels.Finished
-import com.example.flashcards.viewmodels.InProgress
-import com.example.flashcards.viewmodels.ProgressViewModel
+import com.example.flashcards.helpers.Finished
+import com.example.flashcards.helpers.InProgress
+import com.example.flashcards.helpers.ProgressManager
+import com.example.flashcards.viewmodels.PracticeViewModel
 import com.example.flashcards.views.Dialog
+import kotlinx.coroutines.launch
 
 class PracticeFragment : Fragment() {
-    private val viewModel by activityViewModels<ProgressViewModel>()
+    private val viewModel by viewModels<PracticeViewModel>()
 
     private var _binding: FragmentPracticeBinding? = null
     private val binding get() = _binding!!
 
     private val onBackPressed = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
-            val currStat = viewModel.status.value
-            if (currStat is InProgress && currStat.end > 0) {
+            if (viewModel.madeProgress) {
                 showConfirmLeaveDialog()
             } else {
-                viewModel.finish()
+                ProgressManager.stop()
                 findNavController().popBackStack()
             }
         }
@@ -58,10 +62,14 @@ class PracticeFragment : Fragment() {
             activity?.onBackPressedDispatcher?.onBackPressed()
         }
 
-        viewModel.status.observe(viewLifecycleOwner) { status ->
-            when (status) {
-                is InProgress -> updateCardDisplay(status)
-                Finished -> {}
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.watchStatus { status ->
+                    when (status) {
+                        is InProgress -> updateCardDisplay(status)
+                        Finished -> {}
+                    }
+                }
             }
         }
     }
@@ -73,29 +81,29 @@ class PracticeFragment : Fragment() {
 
     private fun updateCardDisplay(progress: InProgress) {
         binding.prev.setOnClickListener { viewModel.prev() }
-        binding.prev.visibility = if (progress.curr == 0) View.INVISIBLE else View.VISIBLE
+        binding.prev.visibility = if (progress.currIndex == 0) View.INVISIBLE else View.VISIBLE
 
         binding.next.setOnClickListener { viewModel.next() }
-        binding.next.visibility = if (progress.curr == progress.end) View.INVISIBLE else View.VISIBLE
+        binding.next.visibility = if (progress.currIndex == progress.endIndex) View.INVISIBLE else View.VISIBLE
 
-        progress.prev?.let { prev ->
+        if (progress.prevIndex == -1) {
+            populateCard(progress)
+            populateDecorCard(progress)
+        } else {
             shuffle(
-                toBack = progress.curr > prev,
+                toBack = progress.currIndex > progress.prevIndex,
                 onStart = { populateCard(progress) },
                 onEnd = { populateDecorCard(progress) }
             )
-        } ?: run {
-            populateCard(progress)
-            populateDecorCard(progress)
         }
 
         binding.decorCard.onFlip = null
 
-        binding.progress.text = "${progress.curr + 1} / ${progress.size}"
+        binding.progress.text = "${progress.currIndex + 1} / ${progress.size}"
 
         binding.sad.setOnClickListener {
             viewModel.next(false)
-            if (progress.curr == progress.size - 1) {
+            if (progress.currIndex == progress.size - 1) {
                 slideOut {
                     findNavController().navigate(R.id.action_practiceFragment_to_finishFragment)
                 }
@@ -104,7 +112,7 @@ class PracticeFragment : Fragment() {
 
         binding.happy.setOnClickListener {
             viewModel.next(true)
-            if (progress.curr == progress.size - 1) {
+            if (progress.currIndex == progress.size - 1) {
                 slideOut {
                     findNavController().navigate(R.id.action_practiceFragment_to_finishFragment)
                 }
@@ -119,7 +127,7 @@ class PracticeFragment : Fragment() {
             visibleSide = progress.card.visibleSide
             onFlip = { visibleSide ->
                 binding.decorCard.visibleSide = visibleSide
-                viewModel.setVisibleSide(progress.curr, visibleSide)
+                viewModel.setVisibleSide(progress.currIndex, visibleSide)
             }
         }
     }
@@ -137,7 +145,7 @@ class PracticeFragment : Fragment() {
             setTitle("Leave Practice")
             setMessage("Are you sure you want to leave? Your progress will be lost.")
             setPositiveButton("Leave") { dialog, which ->
-                viewModel.finish()
+                ProgressManager.stop()
                 findNavController().popBackStack()
                 dialog.dismiss()
             }

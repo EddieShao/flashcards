@@ -91,7 +91,7 @@ class CardListView @JvmOverloads constructor(
                 front = card.front
                 back = card.back
                 isHappy = card.isHappy
-                visibleSide = card.visibleSide
+                visibleSide = FlashCard.Side.FRONT
             }
         }
 

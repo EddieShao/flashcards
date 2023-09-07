@@ -5,15 +5,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.flashcards.databinding.FragmentReviewBinding
-import com.example.flashcards.viewmodels.ProgressViewModel
-import com.example.flashcards.views.FlashCard
+import com.example.flashcards.helpers.ProgressManager
 
 class ReviewFragment : Fragment() {
-    private val viewModel by activityViewModels<ProgressViewModel>()
-
     private var _binding: FragmentReviewBinding? = null
     private val binding get() = _binding!!
 
@@ -33,7 +29,7 @@ class ReviewFragment : Fragment() {
         }
 
         with(binding.cards) {
-            submitList(viewModel.overview)
+            submitList(ProgressManager.instance.cards)
         }
     }
 
