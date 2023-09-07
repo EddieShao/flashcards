@@ -3,6 +3,8 @@ package com.example.flashcards.helpers
 import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
+import android.view.View
+import androidx.navigation.findNavController
 import kotlin.reflect.KClass
 
 object SettingsHelper {
@@ -18,6 +20,9 @@ object SettingsHelper {
                 when (setting.type) {
                     String::class -> {
                         setting to (prefs.getString(setting.key, setting.default as String) ?: setting.default)
+                    }
+                    Unit::class -> {
+                        setting to Unit
                     }
                     else -> {
                         null
@@ -87,6 +92,17 @@ enum class Setting(
             RevealSideOption.RANDOM.str
         ),
         default = RevealSideOption.FRONT.str
+    ),
+    ATTRIBUTIONS(
+        key = "attributions",
+        title = "Attributions",
+        description = "",
+        type = Unit::class,
+        options = listOf<(View) -> Unit> { view ->
+            view.findNavController()
+                .navigate(com.example.flashcards.R.id.action_settingsFragment_to_attributionsFragment)
+        },
+        default = Unit
     )
 }
 

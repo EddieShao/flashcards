@@ -15,7 +15,11 @@
         android:id="@+id/settingsFragment"
         android:name="com.example.flashcards.fragments.SettingsFragment"
         android:label="fragment_settings"
-        tools:layout="@layout/fragment_settings" />
+        tools:layout="@layout/fragment_settings" >
+        <action
+            android:id="@+id/action_settingsFragment_to_attributionsFragment"
+            app:destination="@id/attributionsFragment" />
+    </fragment>
     <fragment
         android:id="@+id/practiceFragment"
         android:name="com.example.flashcards.fragments.PracticeFragment"
@@ -54,4 +58,9 @@
             android:id="@+id/action_stackListFragment_to_settingsFragment"
             app:destination="@id/settingsFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/attributionsFragment"
+        android:name="com.example.flashcards.fragments.AttributionsFragment"
+        android:label="fragment_attributions"
+        tools:layout="@layout/fragment_attributions" />
 </navigation>

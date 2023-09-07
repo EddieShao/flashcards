@@ -43,6 +43,11 @@ class SettingAdapter(
                 String::class -> {
                     binding.control.addView(inflateDropDownSetting(setting))
                 }
+                Unit::class -> {
+                    binding.root.setOnClickListener {
+                        (setting.options.first() as (View) -> Unit)(it)
+                    }
+                }
             }
         }
 
