@@ -1,6 +1,5 @@
 package com.example.flashcards.fragments
 
-import android.media.MediaPlayer
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -25,13 +24,6 @@ class FinishFragment : Fragment() {
             ProgressManager.stop()
             findNavController().popBackStack(R.id.stackListFragment, false)
         }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        // TODO: figure out how to only play this once. right now it plays whenever screen changes
-        //  vertical/horizontal (whenever onCreate is called)
-        MediaPlayer.create(context, R.raw.finish).start()
     }
 
     override fun onCreateView(

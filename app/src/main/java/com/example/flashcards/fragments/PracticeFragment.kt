@@ -32,6 +32,8 @@ class PracticeFragment : Fragment() {
     private var _binding: FragmentPracticeBinding? = null
     private val binding get() = _binding!!
 
+    private val finishSound by lazy { MediaPlayer.create(context, R.raw.finish) }
+
     private val onBackPressed = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
             if (viewModel.madeProgress) {
@@ -105,6 +107,7 @@ class PracticeFragment : Fragment() {
             viewModel.next(false)
             if (progress.currIndex == progress.size - 1) {
                 slideOut {
+                    finishSound.start()
                     findNavController().navigate(R.id.action_practiceFragment_to_finishFragment)
                 }
             }
@@ -114,6 +117,7 @@ class PracticeFragment : Fragment() {
             viewModel.next(true)
             if (progress.currIndex == progress.size - 1) {
                 slideOut {
+                    finishSound.start()
                     findNavController().navigate(R.id.action_practiceFragment_to_finishFragment)
                 }
             }
