@@ -55,11 +55,10 @@ class SettingAdapter(
             val binding = DropdownSettingControlBinding.inflate(
                 LayoutInflater.from(binding.root.context), binding.root, false
             )
-            binding.choice.text = SettingsHelper.currentValueOf(setting) as String
-            binding.menuButton.setOnClickListener { menuButton ->
+            val showPopupMenu = { anchor: View ->
                 val popupMenu = PopupMenu(
-                    ContextThemeWrapper(menuButton.context, R.style.MenuStyle), // force ltr
-                    menuButton
+                    ContextThemeWrapper(anchor.context, R.style.MenuStyle), // force ltr
+                    anchor
                 )
                 for (option in setting.options) {
                     popupMenu.menu.add(option as String)
@@ -71,6 +70,9 @@ class SettingAdapter(
                 }
                 popupMenu.show()
             }
+            binding.choice.text = SettingsHelper.currentValueOf(setting) as String
+            binding.choice.setOnClickListener { showPopupMenu(binding.menuButton) }
+            binding.menuButton.setOnClickListener { showPopupMenu(binding.menuButton) }
             return binding.root
         }
     }
