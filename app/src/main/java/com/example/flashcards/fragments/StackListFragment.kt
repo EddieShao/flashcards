@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.doOnTextChanged
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -19,16 +20,21 @@ import com.example.flashcards.views.Dialog
 import com.example.flashcards.views.SpaceDivider
 import com.example.flashcards.adapters.StackAdapter
 import com.example.flashcards.adapters.StackLoadStateAdapter
+import com.example.flashcards.viewmodels.ProgressViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class StackListFragment : Fragment() {
     private val viewModel by viewModels<StackListViewModel>()
+    private val progressViewModel by activityViewModels<ProgressViewModel>()
 
     private var _binding: FragmentStackListBinding? = null
     private val binding get() = _binding!!
 
-    private val adapter = StackAdapter { stack -> showConfirmDeleteDialog(stack) }.apply {
+    private val adapter = StackAdapter(
+        { stack -> showConfirmDeleteDialog(stack) },
+        { stackId -> progressViewModel.start(stackId) }
+    ).apply {
         addLoadStateListener { states ->
             if (states.append.endOfPaginationReached) {
                 // use nullable binding because load state might change outside of lifecycle

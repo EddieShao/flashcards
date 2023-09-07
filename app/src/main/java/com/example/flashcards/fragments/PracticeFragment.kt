@@ -14,7 +14,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.flashcards.R
 import com.example.flashcards.databinding.FragmentPracticeBinding
-import com.example.flashcards.helpers.NavArgs
 import com.example.flashcards.helpers.SystemHelper
 import com.example.flashcards.helpers.SystemHelper.dp
 import com.example.flashcards.viewmodels.Finished
@@ -28,8 +27,6 @@ class PracticeFragment : Fragment() {
     private var _binding: FragmentPracticeBinding? = null
     private val binding get() = _binding!!
 
-    private val stackId by lazy { requireArguments().getInt(NavArgs.STACK_ID.str) }
-
     private val onBackPressed = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
             val currStat = viewModel.status.value
@@ -40,11 +37,6 @@ class PracticeFragment : Fragment() {
                 findNavController().popBackStack()
             }
         }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel.start(stackId)
     }
 
     override fun onCreateView(

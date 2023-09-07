@@ -16,7 +16,8 @@ import com.example.flashcards.databinding.StackBinding
 import com.example.flashcards.helpers.NavArgs
 
 class StackAdapter(
-    private val onDeleteClicked: (stack: Stack) -> Unit
+    private val onDeleteClicked: (stack: Stack) -> Unit,
+    private val onPlayClicked: (stackId: Int) -> Unit
 ) : PagingDataAdapter<Stack, StackAdapter.ViewHolder>(DIFF_CALLBACK) {
     companion object {
         val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Stack>() {
@@ -45,12 +46,8 @@ class StackAdapter(
                 )
             }
             holder.binding.play.setOnClickListener { playButton ->
-                playButton.findNavController().navigate(
-                    R.id.action_stackListFragment_to_practiceFragment,
-                    bundleOf(
-                        NavArgs.STACK_ID.str to stack.id
-                    )
-                )
+                onPlayClicked(stack.id)
+                playButton.findNavController().navigate(R.id.action_stackListFragment_to_practiceFragment)
             }
             holder.binding.kebabMenu.setOnClickListener { kebabMenu ->
                 val popupMenu = PopupMenu(kebabMenu.context, kebabMenu)
